@@ -12,8 +12,6 @@ services:
       - ../.env
     command: >
       sh -c "alembic upgrade head && python -m src.cli api --host 0.0.0.0 --port 8000"
-    ports:
-      - "127.0.0.1:8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
@@ -22,6 +20,10 @@ services:
       redis:
         condition: service_started
     restart: unless-stopped
+    networks:
+      code-trainer-net:
+        aliases:
+          - code-trainer-api
 
   postgres:
     image: postgres:16-alpine
@@ -37,10 +39,19 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - code-trainer-net
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    networks:
+      - code-trainer-net
+
+networks:
+  code-trainer-net:
+    name: code-trainer-net
+    driver: bridge
 
 volumes:
   postgres_data:

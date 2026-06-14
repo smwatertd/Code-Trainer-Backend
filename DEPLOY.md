@@ -24,6 +24,9 @@ cp .env.production.example .env
 docker compose --env-file .env -f docker/docker-compose.prod.yml up -d --build
 ```
 
+Сеть `code-trainer-net` создаётся автоматически при первом запуске backend.
+Frontend подключается к ней как external network.
+
 ## Раннеры (Python, C++, Pascal, Java, C#)
 
 ```bash
