@@ -1,0 +1,40 @@
+id: python
+label: Python
+file_extension: .py
+monaco_language: python
+features:
+  - lint
+  - compile
+  - test
+patterns:
+  normalization_key: python
+
+grammar:
+  tree_sitter: python
+
+local:
+  lint:
+    command:
+      - ruff
+      - check
+      - --config
+      - "{ruff_config}"
+      - --output-format
+      - concise
+      - "{filename}"
+  compile:
+    command:
+      - python
+      - -m
+      - py_compile
+      - "{filename}"
+
+docker:
+  image: python_runner
+  lint: "RUFF_CACHE_DIR=/tmp/ruff_cache ruff check --config /runner/ruff-student.toml --output-format concise {filename} || true"
+  compile: "python -m py_compile {filename}"
+  run: "python {filename}"
+
+test:
+  strategy: stdin_lines
+  timeout_seconds: 2

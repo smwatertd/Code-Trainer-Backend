@@ -1,0 +1,48 @@
+name: code-trainer-test
+
+services:
+  api:
+    container_name: code-trainer-test-api
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ../.env.test
+    command: sh -c "find tests -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true; pytest tests --cov=src --cov-report=html:coverage --cov-report=xml:coverage.xml"
+    volumes:
+      - ../coverage:/app/coverage
+      - ../coverage.xml:/app/coverage.xml
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  redis:
+    image: redis:7-alpine
+    container_name: code-trainer-test-redis
+    restart: "no"
+    ports:
+      - "6380:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: code-trainer-test-postgres
+    restart: "no"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: code_trainer_test
+    ports:
+      - "5435:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

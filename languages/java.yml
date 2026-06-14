@@ -1,0 +1,34 @@
+id: java
+label: Java
+file_extension: .java
+monaco_language: java
+features:
+  - lint
+  - compile
+  - test
+patterns:
+  normalization_key: java
+
+local:
+  lint:
+    command:
+      - bash
+      - -lc
+      - 'workdir="$(dirname "{filename}")" && class=$(sed -nE "s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\2/p" "{filename}" | head -1) && class=${{class:-Main}} && cp "{filename}" "$workdir/${{class}}.java" && javac -Xlint:all -d "$workdir" "$workdir/${{class}}.java" 2>&1 | grep -i error || true'
+  compile:
+    command:
+      - bash
+      - -lc
+      - 'workdir="$(dirname "{filename}")" && class=$(sed -nE "s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\2/p" "{filename}" | head -1) && class=${{class:-Main}} && cp "{filename}" "$workdir/${{class}}.java" && javac -d "$workdir" "$workdir/${{class}}.java"'
+
+docker:
+  image: java_runner
+  lint: "bash -c 'class=$(sed -nE \"s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\\2/p\" {source} | head -1) && class=${{class:-Main}} && cp {source} /tmp/home/${{class}}.java && javac -d /tmp/home /tmp/home/${{class}}.java 2>&1 | grep -i error || true'"
+  compile: "bash -c 'class=$(sed -nE \"s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\\2/p\" {source} | head -1) && class=${{class:-Main}} && cp {source} /tmp/home/${{class}}.java && javac -d /tmp/home /tmp/home/${{class}}.java 2>&1'"
+  run: "bash -c 'class=$(sed -nE \"s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\\2/p\" {source} | head -1) && class=${{class:-Main}} && cp {source} /tmp/home/${{class}}.java && javac -d /tmp/home /tmp/home/${{class}}.java 2>&1 && java -cp /tmp/home ${{class}}'"
+
+test:
+  strategy: compile_and_run
+  timeout_seconds: 5
+  local_one_shot: 'workdir="$(dirname "{source}")" && class=$(sed -nE "s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\2/p" "{source}" | head -1) && class=${{class:-Main}} && cp "{source}" "$workdir/${{class}}.java" && javac -d "$workdir" "$workdir/${{class}}.java" && java -cp "$workdir" ${{class}}'
+  docker_one_shot: "bash -c 'class=$(sed -nE \"s/^[[:space:]]*(public[[:space:]]+)?class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\\2/p\" {source} | head -1) && class=${{class:-Main}} && cp {source} /tmp/home/${{class}}.java && javac -d /tmp/home /tmp/home/${{class}}.java 2>&1 && java -cp /tmp/home ${{class}}'"

@@ -1,0 +1,75 @@
+version: 1
+
+tier_defaults:
+  beginner:
+    required_actions: [recognize, translate, implement]
+    optional_actions: [analyze, debug]
+    disabled_actions: []
+
+action_masks:
+  for_loop:
+    required_actions: [implement]
+    optional_actions: [translate, recognize]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      translate: [tr_python_snippet]
+      recognize: [rec_python_snippet_to_text]
+
+  while_loop:
+    required_actions: [implement]
+    optional_actions: [translate]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      translate: [tr_python_snippet]
+
+  if_else:
+    required_actions: [implement]
+    optional_actions: [translate, recognize, analyze]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      translate: [tr_python_snippet]
+      recognize: [rec_python_snippet_to_text]
+      analyze: [ana_python_predict_output]
+
+  nested_branch:
+    required_actions: [implement]
+    optional_actions: [analyze]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      analyze: [ana_python_predict_output]
+
+  function_definition:
+    required_actions: [implement]
+    optional_actions: [translate, recognize]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      translate: [tr_python_snippet]
+      recognize: [rec_python_snippet_to_text]
+
+  function_call:
+    required_actions: [implement]
+    optional_actions: [analyze]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      analyze: [ana_python_predict_output]
+
+  return_value:
+    required_actions: [implement]
+    optional_actions: [debug]
+    disabled_actions: []
+    required_patterns_by_action:
+      implement: [tr_pattern_translation]
+    optional_patterns_by_action:
+      debug: [dbg_python_logic_fix]

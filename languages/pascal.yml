@@ -1,0 +1,45 @@
+id: pascal
+label: Pascal
+file_extension: .pas
+monaco_language: pascal
+features:
+  - lint
+  - compile
+  - test
+patterns:
+  normalization_key: pascal
+
+local:
+  lint:
+    command:
+      - fpc
+      - -vw
+      - -Mdelphi
+      - "{filename}"
+  compile:
+    command:
+      - fpc
+      - -O2
+      - -Mdelphi
+      - -v0
+      - "{filename}"
+      - "-o{output}"
+
+docker:
+  image: pascal_runner
+  lint: "fpc -vw -Mdelphi {filename} 2>&1 || true"
+  compile: "fpc -O2 -Mdelphi -v0 {filename} -o{binary}"
+  run: "fpc -O2 -Mdelphi -v0 {filename} -o{binary} >/tmp/ct-fpc.out 2>&1; rc=$?; if [ $rc -ne 0 ]; then cat /tmp/ct-fpc.out; exit $rc; fi; chmod +x {binary} && {binary}"
+
+test:
+  strategy: compile_and_run
+  compile_once: true
+  timeout_seconds: 3
+  compile:
+    - fpc
+    - "-O2"
+    - "-Mdelphi"
+    - "-v0"
+    - "{source}"
+    - "-o{binary}"
+  docker_one_shot: "fpc -O2 -Mdelphi -v0 {source} -o{binary} >/tmp/ct-fpc.out 2>&1; rc=$?; if [ $rc -ne 0 ]; then cat /tmp/ct-fpc.out; exit $rc; fi; chmod +x {binary} && {binary}"

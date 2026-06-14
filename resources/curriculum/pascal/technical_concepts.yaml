@@ -1,0 +1,289 @@
+# Technical Concepts — атомы для mastery, detection, review (60 шт.)
+version: 1
+
+concepts:
+  # --- program_structure ---
+  - id: program_entry
+    learning_concept_id: program_structure
+    name_ru: "Точка входа program"
+    tier: beginner
+  - id: sequential_execution
+    learning_concept_id: program_structure
+    name_ru: "Последовательное выполнение"
+    tier: beginner
+  - id: block_scope
+    learning_concept_id: program_structure
+    name_ru: "Блок begin/end"
+    tier: beginner
+  - id: statement_group
+    learning_concept_id: program_structure
+    name_ru: "Группа операторов"
+    tier: beginner
+
+  # --- data_and_variables ---
+  - id: variable_binding
+    learning_concept_id: data_and_variables
+    name_ru: "Объявление переменной var"
+    tier: beginner
+  - id: constant_binding
+    learning_concept_id: data_and_variables
+    name_ru: "Константа const"
+    tier: beginner
+  - id: typed_declaration
+    learning_concept_id: data_and_variables
+    name_ru: "Явный тип"
+    tier: beginner
+  - id: literal_value
+    learning_concept_id: data_and_variables
+    name_ru: "Литералы"
+    tier: beginner
+  - id: assignment
+    learning_concept_id: data_and_variables
+    name_ru: "Присваивание :="
+    tier: beginner
+
+  # --- operators ---
+  - id: arithmetic_ops
+    learning_concept_id: operators
+    name_ru: "Арифметика"
+    tier: beginner
+  - id: comparison_ops
+    learning_concept_id: operators
+    name_ru: "Сравнение"
+    tier: beginner
+  - id: logical_ops
+    learning_concept_id: operators
+    name_ru: "Логические операции"
+    tier: beginner
+  - id: compound_assignment
+    learning_concept_id: operators
+    name_ru: "Составное присваивание"
+    tier: intermediate
+
+  # --- conditions ---
+  - id: simple_branch
+    learning_concept_id: conditions
+    name_ru: "If then else"
+    tier: beginner
+  - id: multi_branch
+    learning_concept_id: conditions
+    name_ru: "Цепочка if else"
+    tier: beginner
+  - id: switch_selection
+    learning_concept_id: conditions
+    name_ru: "Case of"
+    tier: intermediate
+  - id: conditional_expression
+    learning_concept_id: conditions
+    name_ru: "Условие в выражении"
+    tier: intermediate
+
+  # --- loops ---
+  - id: counted_loop
+    learning_concept_id: loops
+    name_ru: "For to/downto"
+    tier: beginner
+  - id: pre_condition_loop
+    learning_concept_id: loops
+    name_ru: "While do"
+    tier: beginner
+  - id: post_condition_loop
+    learning_concept_id: loops
+    name_ru: "Repeat until"
+    tier: beginner
+  - id: collection_iteration
+    learning_concept_id: loops
+    name_ru: "Перебор массива/строки"
+    tier: intermediate
+  - id: nested_iteration
+    learning_concept_id: loops
+    name_ru: "Вложенные циклы"
+    tier: intermediate
+  - id: loop_control
+    learning_concept_id: loops
+    name_ru: "Break / Continue"
+    tier: intermediate
+
+  # --- functions ---
+  - id: function_definition
+    learning_concept_id: functions
+    name_ru: "Procedure / Function"
+    tier: beginner
+  - id: function_invocation
+    learning_concept_id: functions
+    name_ru: "Вызов подпрограммы"
+    tier: beginner
+  - id: parameter_passing
+    learning_concept_id: functions
+    name_ru: "Параметры var/value"
+    tier: intermediate
+  - id: return_flow
+    learning_concept_id: functions
+    name_ru: "Return / Result"
+    tier: beginner
+  - id: recursion
+    learning_concept_id: functions
+    name_ru: "Рекурсия"
+    tier: intermediate
+  - id: lambda_abstraction
+    learning_concept_id: functions
+    name_ru: "Анонимные функции"
+    tier: advanced
+    notes: "Опционально для Pascal; допускается пропуск в базовом треке."
+
+  # --- files ---
+  - id: stdin_read
+    learning_concept_id: files
+    name_ru: "Readln"
+    tier: beginner
+  - id: stdout_write
+    learning_concept_id: files
+    name_ru: "Writeln"
+    tier: beginner
+  - id: file_read
+    learning_concept_id: files
+    name_ru: "Чтение файла"
+    tier: intermediate
+  - id: file_write
+    learning_concept_id: files
+    name_ru: "Запись файла"
+    tier: intermediate
+
+  # --- collections ---
+  - id: indexed_sequence
+    learning_concept_id: collections
+    name_ru: "Массив array"
+    tier: intermediate
+  - id: dynamic_array
+    learning_concept_id: collections
+    name_ru: "Динамический массив"
+    tier: intermediate
+  - id: key_value_map
+    learning_concept_id: collections
+    name_ru: "Запись record"
+    tier: intermediate
+  - id: string_sequence
+    learning_concept_id: collections
+    name_ru: "Строка string"
+    tier: intermediate
+  - id: set_collection
+    learning_concept_id: collections
+    name_ru: "Множество set"
+    tier: intermediate
+
+  # --- data_processing ---
+  - id: map_transform
+    learning_concept_id: data_processing
+    name_ru: "Преобразование элементов"
+    tier: intermediate
+  - id: filter_select
+    learning_concept_id: data_processing
+    name_ru: "Отбор по условию"
+    tier: intermediate
+  - id: fold_aggregate
+    learning_concept_id: data_processing
+    name_ru: "Сумма / агрегация"
+    tier: intermediate
+  - id: sort_order
+    learning_concept_id: data_processing
+    name_ru: "Сортировка"
+    tier: intermediate
+  - id: search_find
+    learning_concept_id: data_processing
+    name_ru: "Линейный поиск"
+    tier: intermediate
+
+  # --- modules ---
+  - id: import_dependency
+    learning_concept_id: modules
+    name_ru: "Uses / unit"
+    tier: intermediate
+  - id: module_namespace
+    learning_concept_id: modules
+    name_ru: "Interface / implementation"
+    tier: intermediate
+  - id: symbol_visibility
+    learning_concept_id: modules
+    name_ru: "Export / visibility"
+    tier: advanced
+
+  # --- oop ---
+  - id: class_type
+    learning_concept_id: oop
+    name_ru: "Class / object"
+    tier: advanced
+  - id: object_instance
+    learning_concept_id: oop
+    name_ru: "Создание экземпляра"
+    tier: advanced
+  - id: method_dispatch
+    learning_concept_id: oop
+    name_ru: "Метод объекта"
+    tier: advanced
+  - id: inheritance_hierarchy
+    learning_concept_id: oop
+    name_ru: "Наследование"
+    tier: advanced
+  - id: field_encapsulation
+    learning_concept_id: oop
+    name_ru: "Private / protected"
+    tier: advanced
+  - id: interface_contract
+    learning_concept_id: oop
+    name_ru: "Interface / abstract"
+    tier: advanced
+
+  # --- memory ---
+  - id: value_semantics
+    learning_concept_id: memory
+    name_ru: "Значимые типы"
+    tier: advanced
+  - id: reference_semantics
+    learning_concept_id: memory
+    name_ru: "Ссылочные типы"
+    tier: advanced
+  - id: dynamic_allocation
+    learning_concept_id: memory
+    name_ru: "New / Dispose"
+    tier: advanced
+
+  # --- algorithms ---
+  - id: linear_traversal
+    learning_concept_id: data_processing
+    name_ru: "Линейный обход"
+    tier: intermediate
+    notes: "Applied traversal на массивах/строках; алгоритмические паттерны — в algorithms."
+  - id: divide_conquer
+    learning_concept_id: algorithms
+    name_ru: "Разделяй и властвуй"
+    tier: advanced
+  - id: greedy_step
+    learning_concept_id: algorithms
+    name_ru: "Жадный алгоритм"
+    tier: advanced
+  - id: memoization
+    learning_concept_id: algorithms
+    name_ru: "Мемоизация"
+    tier: advanced
+  - id: backtrack_search
+    learning_concept_id: algorithms
+    name_ru: "Поиск с откатом"
+    tier: advanced
+
+  # --- advanced_structures ---
+  - id: stack_queue
+    learning_concept_id: advanced_structures
+    name_ru: "Стек / очередь"
+    tier: advanced
+  - id: linked_node
+    learning_concept_id: advanced_structures
+    name_ru: "Связный список"
+    tier: advanced
+  - id: tree_hierarchy
+    learning_concept_id: advanced_structures
+    name_ru: "Дерево"
+    tier: advanced
+  - id: graph_edges
+    learning_concept_id: advanced_structures
+    name_ru: "Граф"
+    tier: advanced

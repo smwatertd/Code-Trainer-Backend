@@ -1,0 +1,88 @@
+# Learning Concepts — то, что видит ученик (главы курса)
+version: 1
+target_language: pascal
+
+concepts:
+  - id: program_structure
+    name_ru: "Структура программы"
+    tier: beginner
+    order: 1
+    description_ru: "Как устроена программа: порядок выполнения, блоки, точка входа."
+
+  - id: data_and_variables
+    name_ru: "Данные и переменные"
+    tier: beginner
+    order: 2
+    description_ru: "Имена, значения, присваивание, типы."
+
+  - id: operators
+    name_ru: "Операции"
+    tier: beginner
+    order: 3
+    description_ru: "Арифметика, сравнение, логика."
+
+  - id: conditions
+    name_ru: "Условия"
+    tier: beginner
+    order: 4
+    description_ru: "Ветвление: if, case, выбор по условию."
+
+  - id: loops
+    name_ru: "Циклы"
+    tier: beginner
+    order: 5
+    description_ru: "Повторение: for, while, repeat-until, перебор."
+
+  - id: functions
+    name_ru: "Функции и процедуры"
+    tier: beginner
+    order: 6
+    description_ru: "Подпрограммы, параметры, возврат значения."
+
+  - id: files
+    name_ru: "Ввод, вывод и файлы"
+    tier: beginner
+    order: 7
+    description_ru: "Readln, Writeln, работа с файлами."
+
+  - id: collections
+    name_ru: "Коллекции"
+    tier: intermediate
+    order: 8
+    description_ru: "Массивы, строки, множества, записи."
+
+  - id: data_processing
+    name_ru: "Обработка данных"
+    tier: intermediate
+    order: 9
+    description_ru: "Поиск, сортировка, фильтрация, агрегация."
+
+  - id: modules
+    name_ru: "Модули"
+    tier: intermediate
+    order: 10
+    description_ru: "Units, uses, interface/implementation."
+
+  - id: oop
+    name_ru: "Объектно-ориентированное программирование"
+    tier: advanced
+    order: 11
+    description_ru: "Классы, объекты, наследование в Pascal."
+
+  - id: memory
+    name_ru: "Память и ссылки"
+    tier: advanced
+    order: 12
+    description_ru: "Указатели, динамическая память, ссылочная семантика."
+
+  - id: algorithms
+    name_ru: "Алгоритмы"
+    tier: advanced
+    order: 13
+    description_ru: "Стратегии решения задач."
+
+  - id: advanced_structures
+    name_ru: "Сложные структуры данных"
+    tier: advanced
+    order: 14
+    description_ru: "Стек, очередь, дерево, граф."

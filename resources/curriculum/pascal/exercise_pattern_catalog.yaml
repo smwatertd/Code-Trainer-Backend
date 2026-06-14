@@ -1,0 +1,240 @@
+# Каталог Exercise Patterns — глобальные механики (шаблоны упражнений)
+# Pattern = TC + action + source + target + transfer + grading
+version: 1
+target_language: pascal
+
+# --- Базовые оси ---
+representations:
+  - text
+  - code
+  - blocks
+  - flowchart
+
+actions:
+  - recognize
+  - assemble
+  - translate
+  - analyze
+  - debug
+  - implement
+
+source_languages:
+  - python
+  - cpp
+  - java
+  - csharp
+
+# --- Каталог паттернов (pattern_id уникален в системе) ---
+patterns:
+  # ========== RECOGNIZE ==========
+  - id: rec_code_pascal_to_text
+    action: recognize
+    source: { kind: code, language: pascal }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "По фрагменту Pascal-кода выбрать/назвать конструкцию."
+
+  - id: rec_code_known_to_text
+    action: recognize
+    source: { kind: code, language: "$known" }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "Узнать конструкцию в знакомом языке (опора перед переносом)."
+
+  - id: rec_flowchart_to_text
+    action: recognize
+    source: { kind: flowchart }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "По блок-схеме назвать конструкцию."
+
+  - id: rec_blocks_to_text
+    action: recognize
+    source: { kind: blocks }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "По блокам назвать конструкцию."
+
+  # ========== ASSEMBLE ==========
+  - id: asm_flowchart_to_blocks
+    action: assemble
+    source: { kind: flowchart }
+    target: { kind: blocks }
+    grading: structural
+    legacy_adapter: task_build_from_blocks
+    description_ru: "Собрать блоки по блок-схеме."
+
+  - id: asm_blocks_to_code_pascal
+    action: assemble
+    source: { kind: blocks }
+    target: { kind: code, language: pascal }
+    grading: structural_then_tests
+    legacy_adapter: task_build_from_blocks
+    description_ru: "Собрать Pascal-код из блоков."
+
+  - id: asm_text_to_blocks
+    action: assemble
+    source: { kind: text }
+    target: { kind: blocks }
+    grading: structural
+    description_ru: "Разложить описание на блоки."
+
+  # ========== TRANSLATE (cross-language) ==========
+  - id: tr_python_to_pascal_code
+    action: translate
+    source: { kind: code, language: python }
+    target: { kind: code, language: pascal }
+    transfer: { source: python, target: pascal }
+    grading: tests
+    legacy_adapter: task_translate_snippet
+    description_ru: "Перевести фрагмент Python → Pascal."
+
+  - id: tr_cpp_to_pascal_code
+    action: translate
+    source: { kind: code, language: cpp }
+    target: { kind: code, language: pascal }
+    transfer: { source: cpp, target: pascal }
+    grading: tests
+    legacy_adapter: task_translate_snippet
+
+  - id: tr_java_to_pascal_code
+    action: translate
+    source: { kind: code, language: java }
+    target: { kind: code, language: pascal }
+    transfer: { source: java, target: pascal }
+    grading: tests
+    legacy_adapter: task_translate_snippet
+
+  - id: tr_csharp_to_pascal_code
+    action: translate
+    source: { kind: code, language: csharp }
+    target: { kind: code, language: pascal }
+    transfer: { source: csharp, target: pascal }
+    grading: tests
+    legacy_adapter: task_translate_snippet
+
+  # ========== TRANSLATE (representation) ==========
+  - id: tr_flowchart_to_pascal_code
+    action: translate
+    source: { kind: flowchart }
+    target: { kind: code, language: pascal }
+    transfer: { target: pascal }
+    grading: tests
+    legacy_adapter: task_flowchart_to_code
+    description_ru: "Блок-схема → Pascal."
+
+  - id: tr_flowchart_to_blocks
+    action: translate
+    source: { kind: flowchart }
+    target: { kind: blocks }
+    grading: structural
+    description_ru: "Блок-схема → блоки (промежуточный перенос)."
+
+  - id: tr_blocks_to_pascal_code
+    action: translate
+    source: { kind: blocks }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Блоки → Pascal-код."
+
+  - id: tr_text_spec_to_pascal_code
+    action: translate
+    source: { kind: text }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Текстовое описание → Pascal."
+
+  - id: tr_pascal_to_python_code
+    action: translate
+    source: { kind: code, language: pascal }
+    target: { kind: code, language: python }
+    transfer: { source: pascal, target: python }
+    grading: tests
+    description_ru: "Обратный перенос (review, advanced)."
+
+  # ========== ANALYZE ==========
+  - id: ana_pascal_code_to_text
+    action: analyze
+    source: { kind: code, language: pascal }
+    target: { kind: text }
+    grading: quiz_or_rubric
+    description_ru: "Объяснить, что делает фрагмент Pascal."
+
+  - id: ana_pascal_code_predict_output
+    action: analyze
+    source: { kind: code, language: pascal }
+    target: { kind: text }
+    grading: exact_output
+    description_ru: "Предсказать вывод программы."
+
+  - id: ana_flowchart_to_text
+    action: analyze
+    source: { kind: flowchart }
+    target: { kind: text }
+    grading: rubric
+    description_ru: "Описать алгоритм по схеме."
+
+  - id: ana_known_code_predict_output
+    action: analyze
+    source: { kind: code, language: "$known" }
+    target: { kind: text }
+    grading: exact_output
+    description_ru: "Предсказать вывод (опора на known language)."
+
+  # ========== DEBUG ==========
+  - id: dbg_pascal_code_fix
+    action: debug
+    source: { kind: code, language: pascal }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Исправить ошибку в Pascal-коде."
+    payload: { starter: buggy, max_edit_ratio: 0.35 }
+
+  - id: dbg_pascal_logic_fix
+    action: debug
+    source: { kind: code, language: pascal }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Исправить логическую ошибку (тесты не проходят)."
+
+  - id: dbg_transfer_syntax_fix
+    action: debug
+    source: { kind: code, language: pascal }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Исправить типичную ошибку переноса с $known."
+
+  # ========== IMPLEMENT ==========
+  - id: imp_text_spec_to_pascal
+    action: implement
+    source: { kind: text }
+    target: { kind: code, language: pascal }
+    grading: tests
+    legacy_adapter: task_translate_full_program
+    description_ru: "Написать Pascal по условию."
+
+  - id: imp_flowchart_to_pascal
+    action: implement
+    source: { kind: flowchart }
+    target: { kind: code, language: pascal }
+    grading: tests
+    legacy_adapter: task_flowchart_to_code
+
+  - id: imp_io_tests_pascal
+    action: implement
+    source: { kind: text }
+    target: { kind: code, language: pascal }
+    grading: tests
+    description_ru: "Полная программа с stdin/stdout тестами."
+
+# --- Комбinatorics: сколько уникальных механик ---
+mechanics_summary:
+  recognize_patterns: 4
+  assemble_patterns: 3
+  translate_cross_lang: 4
+  translate_repr: 5
+  analyze_patterns: 4
+  debug_patterns: 3
+  implement_patterns: 3
+  total_base_patterns: 26
+  note: "Каждый TC использует подмножество; полный курс ≈ 26 механик × 60 TC с разным контентом."

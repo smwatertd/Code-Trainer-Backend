@@ -1,0 +1,33 @@
+version: 1
+
+concepts:
+  - id: for_loop
+    learning_concept_id: loops
+    name_ru: "Цикл for"
+    tier: beginner
+  - id: while_loop
+    learning_concept_id: loops
+    name_ru: "Цикл while"
+    tier: beginner
+
+  - id: if_else
+    learning_concept_id: conditions
+    name_ru: "If / elif / else"
+    tier: beginner
+  - id: nested_branch
+    learning_concept_id: conditions
+    name_ru: "Вложенные условия"
+    tier: intermediate
+
+  - id: function_definition
+    learning_concept_id: functions
+    name_ru: "Определение функции def"
+    tier: beginner
+  - id: function_call
+    learning_concept_id: functions
+    name_ru: "Вызов функции"
+    tier: beginner
+  - id: return_value
+    learning_concept_id: functions
+    name_ru: "Возврат значения return"
+    tier: beginner

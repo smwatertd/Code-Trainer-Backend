@@ -1,0 +1,52 @@
+id: cpp
+label: C++
+file_extension: .cpp
+monaco_language: cpp
+features:
+  - lint
+  - compile
+  - test
+patterns:
+  normalization_key: cpp
+
+grammar:
+  tree_sitter: cpp
+
+local:
+  lint:
+    command:
+      - g++
+      - -std=c++17
+      - -Wall
+      - -Wextra
+      - -pedantic
+      - -fsyntax-only
+      - "{filename}"
+  compile:
+    command:
+      - g++
+      - -std=c++17
+      - -Wall
+      - -Wextra
+      - -pedantic
+      - -c
+      - "{filename}"
+      - -o
+      - "{output}"
+
+docker:
+  image: cpp_runner
+  lint: "g++ -std=c++17 -fsyntax-only {filename} 2>&1 || true"
+  compile: "g++ -std=c++17 {filename} -o {binary} 2>&1"
+  run: "g++ -std=c++17 {filename} -o {binary} 2>&1 && chmod +x {binary} && {binary}"
+
+test:
+  strategy: compile_and_run
+  compile_once: true
+  timeout_seconds: 2
+  compile:
+    - g++
+    - "{source}"
+    - -o
+    - "{binary}"
+  docker_one_shot: "g++ -std=c++17 {source} -o {binary} 2>&1 && chmod +x {binary} && {binary}"

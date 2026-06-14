@@ -1,0 +1,215 @@
+# Плоская матрица TC × action — шаблоны + action masks
+version: 1
+ref_templates: pascal_curriculum_track.yaml#templates
+
+# Defaults по tier (если у TC нет явного action_masks)
+tier_defaults:
+  beginner:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    optional_actions: []
+    disabled_actions: []
+  intermediate:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    optional_actions: []
+    disabled_actions: []
+  advanced:
+    required_actions: [recognize, translate, analyze, debug, implement]
+    optional_actions: [assemble]
+    disabled_actions: []
+
+# Явные action masks (required_patterns = mandatory для mastery)
+action_masks:
+  counted_loop:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    optional_actions: []
+    disabled_actions: []
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_flowchart_to_text]
+      assemble: [asm_flowchart_to_blocks, asm_blocks_to_code_pascal]
+      translate: [tr_python_to_pascal_code, tr_cpp_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output]
+      debug: [dbg_transfer_syntax_fix, dbg_pascal_logic_fix]
+      implement: [imp_text_spec_to_pascal]
+    optional_patterns_by_action:
+      recognize: [rec_code_pascal_to_text]
+      translate: [tr_flowchart_to_pascal_code, tr_blocks_to_pascal_code]
+      analyze: [ana_pascal_code_to_text]
+      implement: [imp_io_tests_pascal]
+
+  pre_condition_loop:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    disabled_actions: []
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_flowchart_to_text]
+      assemble: [asm_flowchart_to_blocks, asm_blocks_to_code_pascal]
+      translate: [tr_python_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output]
+      debug: [dbg_pascal_logic_fix, dbg_transfer_syntax_fix]
+      implement: [imp_text_spec_to_pascal]
+    optional_patterns_by_action:
+      translate: [tr_cpp_to_pascal_code, tr_java_to_pascal_code, tr_flowchart_to_pascal_code]
+      implement: [imp_io_tests_pascal]
+
+  post_condition_loop:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    disabled_actions: []
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_flowchart_to_text]
+      assemble: [asm_flowchart_to_blocks, asm_blocks_to_code_pascal]
+      translate: [tr_cpp_to_pascal_code, tr_python_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output]
+      debug: [dbg_transfer_syntax_fix, dbg_pascal_logic_fix]
+      implement: [imp_text_spec_to_pascal]
+    optional_patterns_by_action:
+      translate: [tr_flowchart_to_pascal_code]
+      analyze: [ana_pascal_code_to_text]
+      implement: [imp_io_tests_pascal]
+
+  collection_iteration:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    disabled_actions: []
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_code_pascal_to_text]
+      assemble: [asm_blocks_to_code_pascal]
+      translate: [tr_python_to_pascal_code, tr_java_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output]
+      debug: [dbg_pascal_logic_fix]
+      implement: [imp_text_spec_to_pascal]
+    optional_patterns_by_action:
+      translate: [tr_csharp_to_pascal_code, tr_cpp_to_pascal_code]
+      debug: [dbg_transfer_syntax_fix]
+      implement: [imp_io_tests_pascal]
+    disabled_patterns_by_action:
+      assemble: [asm_flowchart_to_blocks]
+      recognize: [rec_flowchart_to_text]
+
+  nested_iteration:
+    required_actions: [recognize, assemble, translate, analyze, debug, implement]
+    disabled_actions: []
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_flowchart_to_text]
+      assemble: [asm_flowchart_to_blocks, asm_blocks_to_code_pascal]
+      translate: [tr_python_to_pascal_code, tr_cpp_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output, ana_flowchart_to_text]
+      debug: [dbg_pascal_logic_fix]
+      implement: [imp_io_tests_pascal]
+    optional_patterns_by_action:
+      implement: [imp_text_spec_to_pascal]
+      translate: [tr_blocks_to_pascal_code]
+
+  loop_control:
+    required_actions: [recognize, translate, analyze, debug, implement]
+    optional_actions: []
+    disabled_actions: [assemble]
+    required_patterns_by_action:
+      recognize: [rec_code_known_to_text, rec_code_pascal_to_text]
+      translate: [tr_python_to_pascal_code, tr_cpp_to_pascal_code]
+      analyze: [ana_pascal_code_predict_output]
+      debug: [dbg_pascal_logic_fix]
+      implement: [imp_text_spec_to_pascal]
+    optional_patterns_by_action:
+      recognize: [rec_flowchart_to_text]
+      implement: [imp_io_tests_pascal]
+
+matrix:
+  # program_structure
+  program_entry: { template: beginner_tc, overrides: [translate, implement] }
+  sequential_execution: { template: beginner_tc }
+  block_scope: { template: beginner_tc, overrides: [translate] }
+  statement_group: { template: beginner_tc }
+
+  # data_and_variables
+  literal_value: { template: beginner_tc }
+  variable_binding: { template: beginner_tc, overrides: [debug] }
+  typed_declaration: { template: beginner_tc, overrides: [translate] }
+  constant_binding: { template: beginner_tc }
+  assignment: { template: beginner_tc, overrides: [translate] }
+
+  # operators
+  arithmetic_ops: { template: beginner_tc }
+  comparison_ops: { template: beginner_tc }
+  logical_ops: { template: beginner_tc, overrides: [translate] }
+  compound_assignment: { template: intermediate_tc }
+
+  # conditions
+  simple_branch: { template: beginner_tc, overrides: [translate] }
+  multi_branch: { template: beginner_tc }
+  switch_selection: { template: intermediate_tc, overrides: [translate] }
+  conditional_expression: { template: intermediate_tc, overrides: [recognize] }
+
+  # loops
+  counted_loop: { template: loop_tc, full_matrix: true }
+  pre_condition_loop: { template: loop_tc, overrides: [translate] }
+  post_condition_loop: { template: loop_tc, overrides: [translate, debug] }
+  collection_iteration: { template: loop_tc, overrides: [translate] }
+  nested_iteration: { template: loop_tc, overrides: [implement] }
+  loop_control: { template: intermediate_tc, overrides: [translate] }
+
+  # functions
+  function_definition: { template: beginner_tc, overrides: [translate] }
+  function_invocation: { template: beginner_tc }
+  return_flow: { template: beginner_tc }
+  parameter_passing: { template: intermediate_tc, overrides: [translate] }
+  recursion: { template: intermediate_tc, overrides: [implement] }
+  lambda_abstraction: { template: advanced_tc, optional: true }
+
+  # files
+  stdout_write: { template: io_tc, overrides: [translate] }
+  stdin_read: { template: io_tc, overrides: [translate] }
+  file_read: { template: intermediate_tc }
+  file_write: { template: intermediate_tc }
+
+  # collections
+  string_sequence: { template: intermediate_tc }
+  indexed_sequence: { template: intermediate_tc, overrides: [translate] }
+  dynamic_array: { template: intermediate_tc }
+  key_value_map: { template: intermediate_tc, overrides: [translate] }
+  set_collection: { template: intermediate_tc }
+
+  # data_processing
+  linear_traversal: { template: intermediate_tc }
+  search_find: { template: intermediate_tc }
+  filter_select: { template: intermediate_tc }
+  map_transform: { template: intermediate_tc }
+  fold_aggregate: { template: intermediate_tc }
+  sort_order: { template: intermediate_tc }
+
+  # modules
+  import_dependency: { template: intermediate_tc, overrides: [translate] }
+  module_namespace: { template: intermediate_tc }
+  symbol_visibility: { template: advanced_tc }
+
+  # oop
+  class_type: { template: advanced_tc }
+  object_instance: { template: advanced_tc }
+  method_dispatch: { template: advanced_tc }
+  inheritance_hierarchy: { template: advanced_tc }
+  field_encapsulation: { template: advanced_tc }
+  interface_contract: { template: advanced_tc }
+
+  # memory
+  value_semantics: { template: advanced_tc }
+  reference_semantics: { template: advanced_tc }
+  dynamic_allocation: { template: advanced_tc, overrides: [translate] }
+
+  # algorithms
+  divide_conquer: { template: advanced_tc }
+  greedy_step: { template: advanced_tc }
+  memoization: { template: advanced_tc }
+  backtrack_search: { template: advanced_tc }
+
+  # advanced_structures
+  stack_queue: { template: advanced_tc }
+  linked_node: { template: advanced_tc }
+  tree_hierarchy: { template: advanced_tc }
+  graph_edges: { template: advanced_tc }
+
+# Эталон counted_loop (полная матрица из ТЗ)
+reference_full_matrix:
+  counted_loop:
+    recognize: [rec_code_known_to_text, rec_flowchart_to_text]
+    assemble: [asm_flowchart_to_blocks, asm_blocks_to_code_pascal]
+    translate: [tr_python_to_pascal_code, tr_cpp_to_pascal_code, tr_flowchart_to_pascal_code, tr_blocks_to_pascal_code]
+    analyze: [ana_pascal_code_to_text, ana_pascal_code_predict_output]
+    debug: [dbg_pascal_logic_fix, dbg_transfer_syntax_fix]
+    implement: [imp_text_spec_to_pascal, imp_io_tests_pascal]

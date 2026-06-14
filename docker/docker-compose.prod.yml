@@ -1,0 +1,46 @@
+name: code-trainer-backend
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prod
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ../.env
+    command: >
+      sh -c "alembic upgrade head && python -m src.cli api --host 0.0.0.0 --port 8000"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB__USER:-code_trainer}
+      POSTGRES_PASSWORD: ${DB__PASSWORD:?set DB__PASSWORD in .env}
+      POSTGRES_DB: ${DB__NAME:-code_trainer}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB__USER:-code_trainer}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

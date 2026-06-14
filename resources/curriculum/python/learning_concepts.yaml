@@ -1,0 +1,21 @@
+version: 1
+target_language: python
+
+concepts:
+  - id: loops
+    name_ru: "Циклы"
+    tier: beginner
+    order: 1
+    description_ru: "Повторение: for, while."
+
+  - id: conditions
+    name_ru: "Условия"
+    tier: beginner
+    order: 2
+    description_ru: "Ветвление: if, elif, else."
+
+  - id: functions
+    name_ru: "Функции"
+    tier: beginner
+    order: 3
+    description_ru: "Именованные блоки кода с параметрами и возвратом значения."

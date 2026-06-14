@@ -1,0 +1,608 @@
+# Концепции программирования для системы проверки кода.
+# Каждая концепция содержит:
+#   name        - отображаемое имя (рус.)
+#   description - что это такое (рус.)
+#   hint        - когда применяется (рус.)
+#   level       - сложность 1/2/3
+#   equivalents - в каком языке какая другая концепция считается эквивалентом
+#   ast_nodes   - узлы AST tree-sitter для каждого языка
+#   patterns    - примеры кода для каждого языка (редактируется админом)
+
+function:
+  name: "Функция"
+  description: "Именованный блок кода, который можно вызвать повторно с разными аргументами."
+  hint: "Используйте функцию чтобы избежать дублирования кода и разбить программу на логические части."
+  level: 1
+  ast_nodes:
+    python: [function_definition]
+    javascript: [function_declaration, function_expression, arrow_function]
+    java: [method_declaration, constructor_declaration]
+    cpp: [function_definition]
+    csharp: [method_declaration, constructor_declaration]
+  patterns:
+    python: |
+      def greet(name):
+          return f"Hello, {name}"
+    javascript: |
+      function greet(name) {
+        return `Hello, ${name}`;
+      }
+    java: |
+      String greet(String name) {
+          return "Hello, " + name;
+      }
+    cpp: |
+      std::string greet(std::string name) {
+          return "Hello, " + name;
+      }
+    csharp: |
+      string Greet(string name) {
+          return $"Hello, {name}";
+      }
+
+loop:
+  name: "Цикл"
+  description: "Повторение блока кода заданное количество раз или пока выполняется условие."
+  hint: "Используйте цикл когда нужно обработать коллекцию элементов или повторить действие многократно."
+  level: 1
+  equivalents:
+    haskell: [recursion]
+    erlang: [recursion]
+  ast_nodes:
+    python: [for_statement, while_statement]
+    javascript: [for_statement, while_statement, for_in_statement, for_of_statement, do_statement]
+    java: [for_statement, while_statement, do_statement, enhanced_for_statement]
+    cpp: [for_statement, while_statement, do_statement, range_based_for_statement]
+    csharp: [for_statement, while_statement, do_statement, foreach_statement]
+    pascal: [for, kFor, while, kWhile]
+  patterns:
+    python: |
+      for i in range(10):
+          print(i)
+
+      while n > 0:
+          n -= 1
+    javascript: |
+      for (let i = 0; i < 10; i++) {
+        console.log(i);
+      }
+
+      while (n > 0) { n--; }
+    java: |
+      for (int i = 0; i < 10; i++) {
+          System.out.println(i);
+      }
+
+      for (String item : items) { }
+    cpp: |
+      for (int i = 0; i < 10; i++) {
+          std::cout << i;
+      }
+
+      for (auto& item : items) { }
+    csharp: |
+      for (int i = 0; i < 10; i++) { }
+
+      foreach (var item in items) { }
+
+condition:
+  name: "Условие"
+  description: "Ветвление — выполнение разного кода в зависимости от условия."
+  hint: "Используйте условие когда программа должна вести себя по-разному в зависимости от данных."
+  level: 1
+  ast_nodes:
+    python: [if_statement]
+    javascript: [if_statement, switch_statement, ternary_expression]
+    java: [if_statement, switch_statement]
+    cpp: [if_statement, switch_statement]
+    csharp: [if_statement, switch_statement]
+    pascal: [ifElse, kIf]
+  patterns:
+    python: |
+      if x > 0:
+          print("positive")
+      elif x == 0:
+          print("zero")
+      else:
+          print("negative")
+    javascript: |
+      if (x > 0) {
+        console.log("positive");
+      } else if (x === 0) {
+        console.log("zero");
+      } else {
+        console.log("negative");
+      }
+    java: |
+      if (x > 0) {
+          System.out.println("positive");
+      } else {
+          System.out.println("not positive");
+      }
+    cpp: |
+      if (x > 0) {
+          std::cout << "positive";
+      } else {
+          std::cout << "not positive";
+      }
+    csharp: |
+      if (x > 0) {
+          Console.WriteLine("positive");
+      } else {
+          Console.WriteLine("not positive");
+      }
+
+class:
+  name: "Класс"
+  description: "Шаблон для создания объектов — объединяет данные (поля) и поведение (методы)."
+  hint: "Используйте класс для моделирования сущностей реального мира или группировки связанных данных и функций."
+  level: 2
+  ast_nodes:
+    python: [class_definition]
+    javascript: [class_declaration, class_expression]
+    java: [class_declaration]
+    cpp: [class_specifier]
+    csharp: [class_declaration]
+  patterns:
+    python: |
+      class Animal:
+          def __init__(self, name):
+              self.name = name
+
+          def speak(self):
+              return f"{self.name} makes a sound"
+    javascript: |
+      class Animal {
+        constructor(name) {
+          this.name = name;
+        }
+        speak() {
+          return `${this.name} makes a sound`;
+        }
+      }
+    java: |
+      class Animal {
+          private String name;
+          Animal(String name) { this.name = name; }
+          String speak() { return name + " makes a sound"; }
+      }
+    cpp: |
+      class Animal {
+      public:
+          std::string name;
+          Animal(std::string n) : name(n) {}
+          std::string speak() { return name + " makes a sound"; }
+      };
+    csharp: |
+      class Animal {
+          public string Name { get; set; }
+          public Animal(string name) { Name = name; }
+          public string Speak() => $"{Name} makes a sound";
+      }
+
+variable:
+  name: "Переменная"
+  description: "Именованное место в памяти для хранения значения."
+  hint: "Используйте переменную чтобы сохранить промежуточный результат или дать имя значению."
+  level: 1
+  ast_nodes:
+    python: [assignment, augmented_assignment, named_expression]
+    javascript: [variable_declaration, lexical_declaration]
+    java: [local_variable_declaration, field_declaration]
+    cpp: [declaration, init_declarator]
+    csharp: [local_declaration_statement, variable_declaration]
+  patterns:
+    python: |
+      x = 42
+      name = "Alice"
+      x += 1
+    javascript: |
+      let x = 42;
+      const name = "Alice";
+      x += 1;
+    java: |
+      int x = 42;
+      String name = "Alice";
+      x += 1;
+    cpp: |
+      int x = 42;
+      std::string name = "Alice";
+      x += 1;
+    csharp: |
+      int x = 42;
+      string name = "Alice";
+      x += 1;
+
+recursion:
+  name: "Рекурсия"
+  description: "Функция которая вызывает саму себя для решения задачи через подзадачи меньшего размера."
+  hint: "Используйте рекурсию для задач которые естественно делятся на одинаковые подзадачи: деревья, факториал, фибоначчи."
+  level: 2
+  ast_nodes:
+    python: [call]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      def factorial(n):
+          if n <= 1:
+              return 1
+          return n * factorial(n - 1)
+    javascript: |
+      function factorial(n) {
+        if (n <= 1) return 1;
+        return n * factorial(n - 1);
+      }
+    java: |
+      int factorial(int n) {
+          if (n <= 1) return 1;
+          return n * factorial(n - 1);
+      }
+    cpp: |
+      int factorial(int n) {
+          if (n <= 1) return 1;
+          return n * factorial(n - 1);
+      }
+    csharp: |
+      int Factorial(int n) {
+          if (n <= 1) return 1;
+          return n * Factorial(n - 1);
+      }
+
+map:
+  name: "Преобразование (map)"
+  description: "Применение функции к каждому элементу коллекции и получение новой коллекции результатов."
+  hint: "Используйте map когда нужно трансформировать каждый элемент списка по одному правилу."
+  level: 2
+  ast_nodes:
+    python: [call]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      squares = list(map(lambda x: x**2, numbers))
+      # или через comprehension:
+      squares = [x**2 for x in numbers]
+    javascript: |
+      const squares = numbers.map(x => x ** 2);
+    java: |
+      List<Integer> squares = numbers.stream()
+          .map(x -> x * x)
+          .collect(Collectors.toList());
+    cpp: |
+      std::vector<int> squares;
+      std::transform(numbers.begin(), numbers.end(),
+                     std::back_inserter(squares), [](int x){ return x*x; });
+    csharp: |
+      var squares = numbers.Select(x => x * x).ToList();
+
+filter:
+  name: "Фильтрация (filter)"
+  description: "Отбор элементов коллекции которые удовлетворяют заданному условию."
+  hint: "Используйте filter когда нужно оставить только те элементы списка которые проходят проверку."
+  level: 2
+  ast_nodes:
+    python: [call]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      evens = list(filter(lambda x: x % 2 == 0, numbers))
+      # или через comprehension:
+      evens = [x for x in numbers if x % 2 == 0]
+    javascript: |
+      const evens = numbers.filter(x => x % 2 === 0);
+    java: |
+      List<Integer> evens = numbers.stream()
+          .filter(x -> x % 2 == 0)
+          .collect(Collectors.toList());
+    cpp: |
+      std::vector<int> evens;
+      std::copy_if(numbers.begin(), numbers.end(),
+                   std::back_inserter(evens), [](int x){ return x % 2 == 0; });
+    csharp: |
+      var evens = numbers.Where(x => x % 2 == 0).ToList();
+
+sort:
+  name: "Сортировка (sort)"
+  description: "Упорядочивание элементов коллекции по заданному критерию."
+  hint: "Используйте сортировку когда нужно расположить элементы в определённом порядке."
+  level: 2
+  ast_nodes:
+    python: [call, attribute]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      numbers.sort()
+      sorted_numbers = sorted(numbers, key=lambda x: -x)
+    javascript: |
+      numbers.sort((a, b) => a - b);
+    java: |
+      Collections.sort(numbers);
+      numbers.sort(Comparator.reverseOrder());
+    cpp: |
+      std::sort(numbers.begin(), numbers.end());
+      std::sort(numbers.begin(), numbers.end(), std::greater<int>());
+    csharp: |
+      numbers.Sort();
+      var sorted = numbers.OrderByDescending(x => x).ToList();
+
+reduce:
+  name: "Свёртка (reduce)"
+  description: "Сведение коллекции к одному значению путём последовательного применения операции."
+  hint: "Используйте reduce для вычисления суммы, произведения, максимума или любого накопленного результата по коллекции."
+  level: 3
+  ast_nodes:
+    python: [call]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      from functools import reduce
+      total = reduce(lambda acc, x: acc + x, numbers, 0)
+    javascript: |
+      const total = numbers.reduce((acc, x) => acc + x, 0);
+    java: |
+      int total = numbers.stream()
+          .reduce(0, Integer::sum);
+    cpp: |
+      int total = std::accumulate(numbers.begin(), numbers.end(), 0);
+    csharp: |
+      int total = numbers.Aggregate(0, (acc, x) => acc + x);
+
+file_io:
+  name: "Файловый ввод-вывод"
+  description: "Чтение данных из файла или запись данных в файл."
+  hint: "Используйте файловый I/O когда данные нужно сохранить между запусками программы или обработать внешний файл."
+  level: 3
+  ast_nodes:
+    python: [call, with_statement]
+    javascript: [call_expression, await_expression]
+    java: [object_creation_expression, method_invocation]
+    cpp: [declaration, call_expression]
+    csharp: [invocation_expression, object_creation_expression]
+  patterns:
+    python: |
+      with open("file.txt", "r") as f:
+          content = f.read()
+
+      with open("file.txt", "w") as f:
+          f.write("Hello")
+    javascript: |
+      const fs = require('fs');
+      const content = fs.readFileSync('file.txt', 'utf8');
+      fs.writeFileSync('file.txt', 'Hello');
+    java: |
+      String content = Files.readString(Path.of("file.txt"));
+      Files.writeString(Path.of("file.txt"), "Hello");
+    cpp: |
+      std::ifstream in("file.txt");
+      std::string content((std::istreambuf_iterator<char>(in)), {});
+      std::ofstream out("file.txt");
+      out << "Hello";
+    csharp: |
+      string content = File.ReadAllText("file.txt");
+      File.WriteAllText("file.txt", "Hello");
+
+exception:
+  name: "Обработка исключений"
+  description: "Перехват и обработка ошибок которые возникают во время выполнения программы."
+  hint: "Используйте исключения для обработки ситуаций которые нельзя предсказать заранее: сетевые ошибки, отсутствие файла, некорректный ввод."
+  level: 3
+  ast_nodes:
+    python: [try_statement, raise_statement]
+    javascript: [try_statement, throw_statement]
+    java: [try_statement, throw_statement]
+    cpp: [try_statement, throw_statement]
+    csharp: [try_statement, throw_statement]
+  patterns:
+    python: |
+      try:
+          result = int(input("Enter number: "))
+      except ValueError as e:
+          print(f"Error: {e}")
+      finally:
+          print("Done")
+    javascript: |
+      try {
+        const result = JSON.parse(input);
+      } catch (e) {
+        console.error("Error:", e.message);
+      } finally {
+        console.log("Done");
+      }
+    java: |
+      try {
+          int result = Integer.parseInt(input);
+      } catch (NumberFormatException e) {
+          System.out.println("Error: " + e.getMessage());
+      } finally {
+          System.out.println("Done");
+      }
+    cpp: |
+      try {
+          int result = std::stoi(input);
+      } catch (const std::exception& e) {
+          std::cerr << "Error: " << e.what();
+      }
+    csharp: |
+      try {
+          int result = int.Parse(input);
+      } catch (FormatException e) {
+          Console.WriteLine($"Error: {e.Message}");
+      } finally {
+          Console.WriteLine("Done");
+      }
+
+import:
+  name: "Импорт"
+  description: "Подключение внешних модулей, библиотек или других файлов проекта."
+  hint: "Используйте импорт чтобы переиспользовать чужой код и не писать всё с нуля."
+  level: 1
+  ast_nodes:
+    python: [import_statement, import_from_statement]
+    javascript: [import_statement, call_expression]
+    java: [import_declaration]
+    cpp: [preproc_include]
+    csharp: [using_directive]
+  patterns:
+    python: |
+      import math
+      from datetime import datetime
+    javascript: |
+      import { useState } from 'react';
+      const fs = require('fs');
+    java: |
+      import java.util.List;
+      import java.util.ArrayList;
+    cpp: |
+      #include <iostream>
+      #include <vector>
+    csharp: |
+      using System;
+      using System.Collections.Generic;
+
+lambda:
+  name: "Лямбда-функция"
+  description: "Анонимная функция заданная прямо в выражении — без имени, обычно короткая."
+  hint: "Используйте лямбду когда функцию нужна только один раз и её удобно записать в одну строку, например как аргумент для map или sort."
+  level: 3
+  ast_nodes:
+    python: [lambda]
+    javascript: [arrow_function]
+    java: [lambda_expression]
+    cpp: [lambda_expression]
+    csharp: [lambda_expression, anonymous_method_expression]
+  patterns:
+    python: |
+      double = lambda x: x * 2
+      sorted_list = sorted(items, key=lambda x: x.name)
+    javascript: |
+      const double = x => x * 2;
+      const sorted = items.sort((a, b) => a.name.localeCompare(b.name));
+    java: |
+      Function<Integer, Integer> double_ = x -> x * 2;
+      items.sort((a, b) -> a.getName().compareTo(b.getName()));
+    cpp: |
+      auto double_ = [](int x) { return x * 2; };
+      std::sort(items.begin(), items.end(),
+                [](auto& a, auto& b){ return a.name < b.name; });
+    csharp: |
+      Func<int, int> double_ = x => x * 2;
+      items.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+comprehension:
+  name: "Включение (comprehension)"
+  description: "Компактная запись для создания коллекции на основе другой коллекции с возможной фильтрацией."
+  hint: "Используйте comprehension вместо цикла когда нужно создать новый список трансформируя или фильтруя существующий."
+  level: 3
+  equivalents:
+    java: [map, filter]
+    cpp: [map, filter]
+    csharp: [map, filter]
+  ast_nodes:
+    python: [list_comprehension, set_comprehension, dictionary_comprehension, generator_expression]
+    javascript: [array_expression]
+    java: []
+    cpp: []
+    csharp: [query_expression]
+  patterns:
+    python: |
+      squares = [x**2 for x in range(10)]
+      evens = [x for x in numbers if x % 2 == 0]
+      word_lengths = {word: len(word) for word in words}
+    javascript: |
+      # нет нативного синтаксиса — используется map/filter:
+      const squares = Array.from({length: 10}, (_, i) => i**2);
+    java: |
+      # нет нативного синтаксиса — используется Stream API:
+      List<Integer> squares = IntStream.range(0, 10)
+          .map(i -> i * i).boxed().collect(Collectors.toList());
+    cpp: |
+      # нет нативного синтаксиса — используется transform/copy_if
+    csharp: |
+      var squares = from x in Enumerable.Range(0, 10) select x * x;
+      // или: Enumerable.Range(0, 10).Select(x => x * x)
+
+io:
+  name: "Ввод / вывод"
+  description: "Чтение данных с клавиатуры и вывод результата в консоль."
+  hint: "Используйте когда программа должна принять ввод пользователя и показать ответ."
+  level: 1
+  ast_nodes:
+    python: [call]
+    javascript: [call_expression]
+    java: [method_invocation]
+    cpp: [call_expression]
+    csharp: [invocation_expression]
+  patterns:
+    python: |
+      n = int(input())
+      print(result)
+    javascript: |
+      const n = parseInt(prompt());
+      console.log(result);
+    java: |
+      Scanner sc = new Scanner(System.in);
+      int n = sc.nextInt();
+      System.out.println(result);
+    cpp: |
+      int n;
+      std::cin >> n;
+      std::cout << result << std::endl;
+    csharp: |
+      int n = int.Parse(Console.ReadLine());
+      Console.WriteLine(result);
+
+nested_loops:
+  name: "Вложенные циклы"
+  description: "Один цикл внутри другого — перебор по двум измерениям."
+  hint: "Используйте когда нужно обработать таблицу, матрицу или все пары элементов."
+  level: 2
+  ast_nodes:
+    python: [for_statement, while_statement]
+    javascript: [for_statement, while_statement, for_in_statement, for_of_statement, do_statement]
+    java: [for_statement, while_statement, do_statement, enhanced_for_statement]
+    cpp: [for_statement, while_statement, do_statement, range_based_for_statement]
+    csharp: [for_statement, while_statement, do_statement, foreach_statement]
+    pascal: [for, kFor, while, kWhile]
+  patterns:
+    python: |
+      for i in range(n):
+          for j in range(n):
+              print(i, j)
+    javascript: |
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          console.log(i, j);
+        }
+      }
+    java: |
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              System.out.println(i + " " + j);
+          }
+      }
+    cpp: |
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              std::cout << i << " " << j << "\n";
+          }
+      }
+    csharp: |
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              Console.WriteLine($"{i} {j}");
+          }
+      }

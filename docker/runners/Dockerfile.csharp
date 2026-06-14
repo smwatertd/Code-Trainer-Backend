@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+ENV DOTNET_NOLOGO=1
+
+RUN useradd --create-home --uid 1000 runner \
+    && mkdir -p /runner/work /runner/template /tmp/home \
+    && chown -R runner:runner /runner /tmp/home
+
+USER runner
+ENV HOME=/tmp/home
+
+RUN cd /runner/template \
+    && dotnet new console -n App -o . --force \
+    && dotnet restore \
+    && dotnet build -v q
+
+WORKDIR /runner
+
+CMD ["sleep", "infinity"]

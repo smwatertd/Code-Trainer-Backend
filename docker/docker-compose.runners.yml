@@ -1,0 +1,42 @@
+name: code-trainer-runners
+
+services:
+  python_runner:
+    build:
+      context: ..
+      dockerfile: docker/runners/Dockerfile.python
+    image: python_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+
+  cpp_runner:
+    build:
+      context: ..
+      dockerfile: docker/runners/Dockerfile.cpp
+    image: cpp_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+
+  pascal_runner:
+    build:
+      context: ..
+      dockerfile: docker/runners/Dockerfile.pascal
+    image: pascal_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+
+  java_runner:
+    build:
+      context: ..
+      dockerfile: docker/runners/Dockerfile.java
+    image: java_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+
+  csharp_runner:
+    build:
+      context: ..
+      dockerfile: docker/runners/Dockerfile.csharp
+    image: csharp_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
