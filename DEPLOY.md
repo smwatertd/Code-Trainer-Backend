@@ -21,7 +21,7 @@ cd /opt/code-trainer-backend
 cp .env.production.example .env
 # Отредактируйте .env: пароль БД, AUTH__SECRET_KEY, CORS__ORIGINS
 
-docker compose -f docker/docker-compose.prod.yml up -d --build
+docker compose --env-file .env -f docker/docker-compose.prod.yml up -d --build
 ```
 
 ## Раннеры (Python, C++, Pascal, Java, C#)
@@ -38,7 +38,7 @@ make prod-runners
 ```bash
 cd /opt/code-trainer-backend
 git pull
-docker compose -f docker/docker-compose.prod.yml up -d --build
+docker compose --env-file .env -f docker/docker-compose.prod.yml up -d --build
 make prod-runners
 ```
 

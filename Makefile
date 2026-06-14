@@ -59,7 +59,7 @@ dev-down:
 	$(COMPOSE_DEV) down --remove-orphans
 
 prod:
-	$(COMPOSE_PROD) up -d --build --remove-orphans
+	$(COMPOSE_PROD) --env-file .env up -d --build --remove-orphans
 
 prod-down:
 	$(COMPOSE_PROD) down --remove-orphans
