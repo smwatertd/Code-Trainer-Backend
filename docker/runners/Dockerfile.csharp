@@ -1,18 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine
 
 ENV DOTNET_NOLOGO=1
 
-RUN useradd --create-home --uid 1000 runner \
-    && mkdir -p /runner/work /runner/template /tmp/home \
-    && chown -R runner:runner /runner /tmp/home
+RUN apk add --no-cache bash \
+    && adduser -D -u 1000 runner \
+    && mkdir -p /runner/work /runner/template /tmp/home /tmp/dotnet \
+    && chown -R runner:runner /runner /tmp/home /tmp/dotnet
+
+COPY docker/runners/csharp-template/ /runner/template/
 
 USER runner
 ENV HOME=/tmp/home
+ENV DOTNET_CLI_HOME=/tmp/dotnet
 
 RUN cd /runner/template \
-    && dotnet new console -n App -o . --force \
     && dotnet restore \
-    && dotnet build -v q
+    && dotnet build -v q --no-restore
 
 WORKDIR /runner
 

@@ -1,0 +1,39 @@
+# Production: без Java (экономия ~700 MB RAM/диска). C# включён.
+name: code-trainer-runners
+
+services:
+  python_runner:
+    image: python_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  cpp_runner:
+    image: cpp_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  pascal_runner:
+    image: pascal_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  csharp_runner:
+    image: csharp_runner
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    deploy:
+      resources:
+        limits:
+          memory: 512M

@@ -36,6 +36,30 @@ make prod-runners
 
 Первый запуск собирает образы (~5–15 мин).
 
+### Слабый VPS (1 GB RAM / 15 GB диск)
+
+На production **Java-раннер отключён** — экономит ~700 MB. C# использует облегчённый Alpine-образ.
+
+```bash
+cd /opt/code-trainer-backend
+chmod +x deploy/build-runners-prod.sh
+./deploy/build-runners-prod.sh
+```
+
+Скрипт очищает Docker build cache перед сборкой C# (иначе «No space left on device»).
+
+Если места всё равно мало:
+
+```bash
+docker stop code-trainer-runners-java_runner-1 2>/dev/null || true
+docker rm code-trainer-runners-java_runner-1 2>/dev/null || true
+docker rmi java_runner 2>/dev/null || true
+docker system prune -af
+./deploy/build-runners-prod.sh
+```
+
+Рекомендуемый минимум для всех языков: **2 GB RAM**, **25 GB** диск.
+
 ## Обновление
 
 ```bash

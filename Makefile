@@ -3,8 +3,10 @@
 COMPOSE_DEV = docker compose -f ./docker/docker-compose.dev.yml
 COMPOSE_PROD = docker compose -f ./docker/docker-compose.prod.yml
 COMPOSE_RUNNERS = docker compose -f ./docker/docker-compose.runners.yml
+COMPOSE_RUNNERS_PROD = docker compose -f ./docker/docker-compose.runners.prod.yml
 export BUILDX_NO_DEFAULT_ATTESTATIONS = 1
 RUNNERS = python cpp pascal java csharp
+RUNNERS_PROD = python cpp pascal csharp
 DOCKER_BUILD_FLAGS = --provenance=false --sbom=false
 LEGACY_DEV_CONTAINERS = code-trainer-dev-api code-trainer-dev-postgres code-trainer-dev-redis
 LEGACY_RUNNER_CONTAINERS = code-trainer-python-runner code-trainer-cpp-runner code-trainer-pascal-runner code-trainer-java-runner code-trainer-csharp-runner
@@ -64,9 +66,23 @@ prod:
 prod-down:
 	$(COMPOSE_PROD) down --remove-orphans
 
-prod-runners-build: runners-build
+prod-runners-build: runners-build-prod
 
-prod-runners: _cleanup-legacy-runners
+prod-runners:
+	@chmod +x ./deploy/build-runners-prod.sh
+	./deploy/build-runners-prod.sh
+
+runners-build-prod:
+	@set -e; \
+	for runner in $(RUNNERS_PROD); do \
+	  echo "==> $${runner}_runner"; \
+	  docker build $(DOCKER_BUILD_FLAGS) \
+	    -f docker/runners/Dockerfile.$$runner \
+	    -t $${runner}_runner \
+	    .; \
+	done
+
+prod-runners-legacy: _cleanup-legacy-runners
 	@set -e; \
 	for runner in $(RUNNERS); do \
 	  img="$${runner}_runner"; \
