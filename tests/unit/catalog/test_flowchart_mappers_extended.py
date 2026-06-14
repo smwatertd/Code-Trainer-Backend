@@ -2,37 +2,33 @@ from __future__ import annotations
 
 import pytest
 
-from migrations.seeds.task_catalog_seed import build_task_catalog
-from src.features.catalog.mappers import _public_flowchart_payload, _public_payload
-
-FLOWCHART_TASK_IDS = [3, 6, *range(39, 51)]
-
-HIDDEN_FLOWCHART_KEYS = {
-    "test_cases",
-    "constructions",
-    "flow_spec",
-    "correct_order",
-    "expected_code",
-}
+from src.features.catalog.mappers import _public_flowchart_payload
 
 
-@pytest.mark.parametrize("task_id", FLOWCHART_TASK_IDS)
-def test_public_flowchart_payload__hides_grading_secrets_for_seed_tasks(task_id: int) -> None:
-    catalog = {item["id"]: item for item in build_task_catalog()}
-    payload = _public_flowchart_payload(dict(catalog[task_id]["payload"]))
+def test_public_flowchart_payload__exposes_student_metadata_hides_flow_spec() -> None:
+    payload = _public_flowchart_payload(
+        {
+            "flowchart_mode": "code_to_flowchart",
+            "source_code": "print('hello')",
+            "test_cases": [{"inputs": "", "output": "hello"}],
+            "constructions": ["for_loop"],
+            "flow_spec": {
+                "required_sequence": ["start", "output", "end"],
+                "required_text_checks": [{"type": "output", "contains_any": ["hello"]}],
+            },
+        }
+    )
 
-    for key in HIDDEN_FLOWCHART_KEYS:
-        assert key not in payload, f"task {task_id} leaked {key}"
-
-
-@pytest.mark.parametrize("task_id", FLOWCHART_TASK_IDS)
-def test_public_payload__flowchart_tasks_expose_reference_code(task_id: int) -> None:
-    catalog = {item["id"]: item for item in build_task_catalog()}
-    task = catalog[task_id]
-    payload = _public_payload(task["task_type"], dict(task["payload"]))
-
-    assert payload.get("flowchart_mode") == "code_to_flowchart"
-    assert payload.get("source_code")
+    assert "test_cases" in payload
+    assert payload["test_cases"] == [{"inputs": "", "output": "hello"}]
+    assert "constructions" in payload
+    assert payload["constructions"] == ["for_loop"]
+    assert "flow_spec" not in payload
+    assert payload["flowchart_mode"] == "code_to_flowchart"
+    assert payload["source_code"] == "print('hello')"
+    assert "source_code_by_language" in payload
+    assert "python" in payload["source_code_by_language"]
+    assert "cpp" in payload["source_code_by_language"]
 
 
 def test_public_flowchart_payload__synthesizes_all_languages() -> None:

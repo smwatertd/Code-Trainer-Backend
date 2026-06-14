@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from collections.abc import AsyncGenerator
 from typing import Any
@@ -15,6 +16,7 @@ from sqlalchemy.ext.asyncio.engine import AsyncEngine
 
 from src.core.settings import AppSettings, get_settings
 from src.shared.database.base import configure_search_path
+from tests.fixtures.flowchart_sample_tasks import build_flowchart_sample_tasks
 
 
 @pytest.fixture(scope="session")
@@ -48,6 +50,31 @@ async def engine(settings: AppSettings) -> AsyncGenerator[AsyncEngine, Any]:
 
     alembic_cfg = Config("alembic.ini")
     await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
+
+    async with engine.begin() as conn:
+        for row in build_flowchart_sample_tasks():
+            await conn.execute(
+                text(f"""
+                    INSERT INTO "{schema}"."tasks"
+                        (id, title, description, difficulty, task_type, visibility,
+                         workflow_status, is_deleted, payload)
+                    VALUES
+                        (:id, :title, :description, :difficulty, :task_type, :visibility,
+                         :workflow_status, false, CAST(:payload AS jsonb))
+                    """),
+                {
+                    "id": row["id"],
+                    "title": row["title"],
+                    "description": row["description"],
+                    "difficulty": row["difficulty"],
+                    "task_type": row["task_type"],
+                    "visibility": row["visibility"],
+                    "workflow_status": row["workflow_status"],
+                    "payload": json.dumps(row["payload"]),
+                },
+            )
+        max_task_id = max(row["id"] for row in build_flowchart_sample_tasks())
+        await conn.execute(text(f'ALTER SEQUENCE "{schema}"."tasks_id_seq" RESTART WITH {max_task_id + 1}'))
 
     yield engine
 

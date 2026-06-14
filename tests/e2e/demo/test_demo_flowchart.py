@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from httpx import AsyncClient
 
-from tests.e2e.helpers.flowchart import valid_if_flowchart
+from tests.e2e.helpers.flowchart import FC_IF_ELSE, valid_if_flowchart
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -12,7 +12,7 @@ async def test_demo_check__flowchart_code_to_flowchart_success(client: AsyncClie
     submit = await client.post(
         "/api/demo/check",
         json={
-            "task_id": 3,
+            "task_id": FC_IF_ELSE,
             "language": "python",
             "code": "if n > 0: print('pos')\nelse: print('nonpos')",
             "nodes": nodes,
@@ -48,7 +48,7 @@ async def test_demo_check__flowchart_missing_decision_fails(client: AsyncClient)
     submit = await client.post(
         "/api/demo/check",
         json={
-            "task_id": 3,
+            "task_id": FC_IF_ELSE,
             "language": "python",
             "code": "print(1)",
             "nodes": nodes,

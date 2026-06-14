@@ -3,18 +3,12 @@ from __future__ import annotations
 import pytest
 from httpx import AsyncClient
 
+from tests.e2e.helpers.payloads import TASK4_AREA_BLOCKS
+
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_demo_check__block_reorder_with_test_cases_success(client: AsyncClient) -> None:
-    submit = await client.post(
-        "/api/demo/check",
-        json={
-            "task_id": 5,
-            "language": "python",
-            "code": "print(1)\nprint(2)",
-            "block_order": [0, 1],
-        },
-    )
+    submit = await client.post("/api/demo/check", json=TASK4_AREA_BLOCKS)
 
     assert submit.status_code == 200
     queued = submit.json()

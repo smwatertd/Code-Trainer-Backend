@@ -18,8 +18,9 @@ async def test_task_repo__list_public_returns_seeded_tasks(session: AsyncSession
 @pytest.mark.asyncio(loop_scope="session")
 async def test_task_repo__get_public_block_reorder(session: AsyncSession) -> None:
     repo = TaskRepo(session)
-    task = await repo.get_public(2)
+    task = await repo.get_public(1)
 
     assert task is not None
     assert task.task_type == "task_build_from_blocks"
-    assert task.payload["correct_order"] == [1, 0]
+    assert task.payload["correct_order"] == [0, 1, 2, 3]
+    assert task.payload["language"] == "pascal"

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from migrations.seeds.task_catalog_seed import build_task_catalog
-from src.shared.execution.checking.flow_validation_service import FlowValidationService
+import pytest
 
-FLOWCHART_TASK_IDS = [3, 6, *range(39, 51)]
+from tests.fixtures.flowchart_sample_tasks import (
+    FLOWCHART_SAMPLE_CATALOG,
+    FLOWCHART_SAMPLE_IDS,
+    flowchart_test_id,
+)
+from src.shared.execution.checking.flow_validation_service import FlowValidationService
 
 
 def _node(node_id: str, block_type: str, text: str = "") -> dict:
@@ -19,7 +23,7 @@ def _flow(*steps: tuple[str, str, str]) -> list[dict]:
 
 
 def _validate(task_id: int, nodes: list[dict], edges: list[dict], flow: list[dict]) -> list[dict]:
-    task = next(item for item in build_task_catalog() if item["id"] == task_id)
+    task = FLOWCHART_SAMPLE_CATALOG[task_id]
     payload = task["payload"]
     service = FlowValidationService()
     result = service.validate_with_details(
@@ -53,7 +57,7 @@ def test_flowchart_seed__task3_if_else() -> None:
         ("5", "output", "nonpos"),
         ("6", "end", ""),
     )
-    assert _validate(3, nodes, edges, flow) == []
+    assert _validate(flowchart_test_id(3), nodes, edges, flow) == []
 
 
 def test_flowchart_seed__task40_for_loop_with_back_edge() -> None:
@@ -70,7 +74,7 @@ def test_flowchart_seed__task40_for_loop_with_back_edge() -> None:
         ("3", "output", "print(i)"),
         ("4", "end", ""),
     )
-    assert _validate(40, nodes, edges, flow) == []
+    assert _validate(flowchart_test_id(40), nodes, edges, flow) == []
 
 
 def test_flowchart_seed__task44_while_loop_with_back_edge() -> None:
@@ -89,7 +93,7 @@ def test_flowchart_seed__task44_while_loop_with_back_edge() -> None:
         ("4", "process", "n -= 1"),
         ("5", "end", ""),
     )
-    assert _validate(44, nodes, edges, flow) == []
+    assert _validate(flowchart_test_id(44), nodes, edges, flow) == []
 
 
 def test_flowchart_seed__task44_while_with_init_and_assign_decrement() -> None:
@@ -117,7 +121,7 @@ def test_flowchart_seed__task44_while_with_init_and_assign_decrement() -> None:
         ("5", "process", "n = n - 1"),
         ("6", "end", ""),
     )
-    assert _validate(44, nodes, edges, flow) == []
+    assert _validate(flowchart_test_id(44), nodes, edges, flow) == []
 
 
 def test_flowchart_seed__task49_table_loop() -> None:
@@ -136,7 +140,7 @@ def test_flowchart_seed__task49_table_loop() -> None:
         ("4", "output", "print"),
         ("5", "end", ""),
     )
-    assert _validate(49, nodes, edges, flow) == []
+    assert _validate(flowchart_test_id(49), nodes, edges, flow) == []
 
 
 def test_flowchart_seed__task40_rejects_wrong_range() -> None:
@@ -153,7 +157,7 @@ def test_flowchart_seed__task40_rejects_wrong_range() -> None:
         ("3", "output", "print(i)"),
         ("4", "end", ""),
     )
-    errors = _validate(40, nodes, edges, flow)
+    errors = _validate(flowchart_test_id(40), nodes, edges, flow)
     assert any(item["type"] == "FLOW_SOURCE_MISMATCH" for item in errors)
 
 
@@ -171,14 +175,13 @@ def test_flowchart_seed__task40_rejects_loop_without_back_edge() -> None:
         ("3", "output", "print(i)"),
         ("4", "end", ""),
     )
-    errors = _validate(40, nodes, edges, flow)
+    errors = _validate(flowchart_test_id(40), nodes, edges, flow)
     assert any(error["type"] == "FLOW_LOOP_BACK_EDGE" for error in errors)
 
 
-def test_all_flowchart_seed_tasks_have_specs_and_tests() -> None:
-    catalog = {item["id"]: item for item in build_task_catalog()}
-    for task_id in FLOWCHART_TASK_IDS:
-        task = catalog[task_id]
+def test_all_flowchart_sample_tasks_have_specs_and_tests() -> None:
+    for task_id in FLOWCHART_SAMPLE_IDS:
+        task = FLOWCHART_SAMPLE_CATALOG[task_id]
         assert task["task_type"] == "task_flowchart_to_code"
         assert task["payload"]["flow_spec"]["required_sequence"]
         assert task["payload"].get("test_cases"), f"task {task_id} missing test_cases"

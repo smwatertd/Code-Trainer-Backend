@@ -23,11 +23,16 @@ def upgrade() -> None:
     catalog = {row["id"]: row for row in build_task_catalog()}
 
     for task_id in FLOWCHART_IDS:
-        row = catalog[task_id]
+        row = catalog.get(task_id)
+        if row is None or row.get("task_type") != "task_flowchart_to_code":
+            continue
+        flow_spec = row["payload"].get("flow_spec")
+        if flow_spec is None:
+            continue
         test_cases = row["payload"].get("test_cases") or FLOWCHART_TEST_CASES.get(task_id)
         if not test_cases:
             continue
-        patch = json.dumps({"test_cases": test_cases, "flow_spec": row["payload"]["flow_spec"]})
+        patch = json.dumps({"test_cases": test_cases, "flow_spec": flow_spec})
         connection.execute(
             sa.text(f"""
                 UPDATE "{schema}"."tasks"

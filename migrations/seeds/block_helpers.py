@@ -48,13 +48,18 @@ def block_reorder_payload(
     expected_code: str,
     output: str,
     topics: list[str],
+    language: str = "python",
+    test_cases: list[dict] | None = None,
 ) -> dict:
-    return {
-        "language": "python",
+    payload: dict = {
+        "language": language,
         "blocks": blocks,
-        "blocks_by_language": blocks_by_language(blocks),
+        "blocks_by_language": blocks_by_language(blocks)
+        if language == "python"
+        else {language: blocks},
         "correct_order": correct_order,
         "expected_code": expected_code,
-        "test_cases": [{"inputs": "", "output": output}],
+        "test_cases": test_cases or [{"inputs": "", "output": output}],
         "topics": topics,
     }
+    return payload

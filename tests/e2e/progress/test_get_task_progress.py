@@ -4,6 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.auth import auth_headers
+from tests.e2e.helpers.payloads import TASK2_AGE_BROKEN, TASK2_AGE_PASCAL
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -27,12 +28,7 @@ async def test_progress__records_pass_after_successful_submission(
     submit = await client.post(
         "/api/submissions",
         headers=headers,
-        json={
-            "task_id": 2,
-            "language": "python",
-            "code": "print('b')\nprint('a')",
-            "block_order": [1, 0],
-        },
+        json=TASK2_AGE_PASCAL,
     )
     assert submit.status_code == 200
     assert submit.json()["status"] == "success"
@@ -58,12 +54,7 @@ async def test_progress__records_failed_attempt(
     submit = await client.post(
         "/api/submissions",
         headers=headers,
-        json={
-            "task_id": 2,
-            "language": "python",
-            "code": "print('a')\nprint('b')",
-            "block_order": [0, 1],
-        },
+        json=TASK2_AGE_BROKEN,
     )
     assert submit.status_code == 200
     assert submit.json()["status"] == "failed"

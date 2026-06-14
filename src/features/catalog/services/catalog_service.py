@@ -10,19 +10,47 @@ from src.features.catalog.domain.dto import TaskDetailDTO, TaskSummaryDTO
 from src.features.catalog.mappers import to_detail, to_internal_detail, to_summary
 from src.features.catalog.models import TaskModel
 from src.features.catalog.repos.task_repo import TaskRepo
+from src.features.progress.repos.task_progress_repo import TaskProgressRepo
+from src.features.progress.services.task_progress_service import (
+    PROGRESS_STATUS_NOT_STARTED,
+    progress_status_from_row,
+)
 
 
 @dataclass
 class CatalogService:
     uow: UnitOfWork
 
-    async def list_public_tasks(self, *, filters: ListTasksCommand | None = None) -> AppResult[list[TaskSummaryDTO]]:
+    async def list_public_tasks(
+        self,
+        *,
+        filters: ListTasksCommand | None = None,
+        user_id: int | None = None,
+    ) -> AppResult[list[TaskSummaryDTO]]:
         async with self.uow(autocommit=False):
             repo = TaskRepo(self.uow.session)
             models = await repo.list_public()
             summaries = [to_summary(model) for model in models]
             if filters is not None:
                 summaries = self._apply_filters(summaries, models, filters)
+            if user_id is not None:
+                progress_rows = await TaskProgressRepo(self.uow.session).list_by_user(user_id)
+                progress_by_task = {
+                    row.task_id: progress_status_from_row(row) for row in progress_rows
+                }
+                summaries = [
+                    TaskSummaryDTO(
+                        id=item.id,
+                        title=item.title,
+                        description=item.description,
+                        difficulty=item.difficulty,
+                        task_type=item.task_type,
+                        topics=item.topics,
+                        languages=item.languages,
+                        progress_status=progress_by_task.get(item.id, PROGRESS_STATUS_NOT_STARTED),
+                    )
+                    for item in summaries
+                ]
             return Ok(summaries)
 
     @staticmethod

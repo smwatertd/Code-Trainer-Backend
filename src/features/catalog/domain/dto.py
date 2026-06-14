@@ -12,6 +12,8 @@ class TaskSummaryDTO:
     difficulty: str
     task_type: str
     topics: tuple[str, ...] = ()
+    languages: tuple[str, ...] = ()
+    progress_status: str | None = None
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from httpx import AsyncClient
 
-from tests.e2e.helpers.flowchart import hello_flowchart
+from tests.e2e.helpers.flowchart import FC_HELLO, hello_flowchart
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -12,7 +12,7 @@ async def test_demo_check__flowchart_semantic_after_structural(client: AsyncClie
     submit = await client.post(
         "/api/demo/check",
         json={
-            "task_id": 6,
+            "task_id": FC_HELLO,
             "language": "python",
             "code": "print('hello')",
             "nodes": nodes,

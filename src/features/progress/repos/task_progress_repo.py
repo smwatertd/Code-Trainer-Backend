@@ -18,6 +18,11 @@ class TaskProgressRepo:
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def list_by_user(self, user_id: int) -> list[TaskProgressModel]:
+        stmt = select(TaskProgressModel).where(TaskProgressModel.user_id == user_id)
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())
+
     async def add(self, row: TaskProgressModel) -> TaskProgressModel:
         self._session.add(row)
         await self._session.flush()

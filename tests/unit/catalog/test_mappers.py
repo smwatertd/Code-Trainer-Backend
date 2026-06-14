@@ -18,6 +18,7 @@ def test_public_payload__hides_block_reorder_answers() -> None:
     assert "correct_order" not in payload
     assert "expected_code" not in payload
     assert "blocks_by_language" in payload
+    assert "code_examples" in payload
     assert payload["blocks_by_language"]["cpp"][0]["content"] == 'cout << "a" << endl;'
     assert payload["blocks_count"] == 2
 
@@ -55,6 +56,8 @@ def test_public_payload__hides_write_from_description_answers() -> None:
         "target_language": "python",
         "template": "print('')",
         "problem_statement": "Выведите 42.",
+        "test_cases": [{"inputs": "", "output": "42"}],
+        "constructions": ["for_loop"],
     }
 
 

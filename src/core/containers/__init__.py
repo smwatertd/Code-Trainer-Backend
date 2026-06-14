@@ -5,6 +5,7 @@ from dependency_injector import containers, providers
 from src.core.containers.assignment_sets import AssignmentSetsContainer
 from src.core.containers.auth import AuthContainer
 from src.core.containers.catalog import CatalogContainer
+from src.core.containers.curriculum import CurriculumContainer
 from src.core.containers.db import DBContainer
 from src.core.containers.demo import DemoContainer
 from src.core.containers.execution import ExecutionContainer
@@ -29,6 +30,7 @@ class Container(containers.DeclarativeContainer):
             "src.features.submissions.router",
             "src.features.progress.router",
             "src.features.progress.curriculum_link_router",
+            "src.features.curriculum.router",
             "src.features.groups.router",
             "src.features.assignment_sets.router",
         ],
@@ -69,6 +71,12 @@ class Container(containers.DeclarativeContainer):
 
     progress = providers.Container(
         ProgressContainer,
+        config=config,
+        uow=db.uow,
+    )
+
+    curriculum = providers.Container(
+        CurriculumContainer,
         config=config,
         uow=db.uow,
     )

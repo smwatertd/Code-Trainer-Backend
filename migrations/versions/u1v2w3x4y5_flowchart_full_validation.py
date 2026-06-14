@@ -22,7 +22,12 @@ def upgrade() -> None:
     for row in build_task_catalog():
         if row["id"] not in {40, 44, 48, 49}:
             continue
-        patch = json.dumps({"flow_spec": row["payload"]["flow_spec"]})
+        if row.get("task_type") != "task_flowchart_to_code":
+            continue
+        flow_spec = row["payload"].get("flow_spec")
+        if flow_spec is None:
+            continue
+        patch = json.dumps({"flow_spec": flow_spec})
         connection.execute(
             sa.text(f"""
                 UPDATE "{schema}"."tasks"

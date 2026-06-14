@@ -120,9 +120,14 @@ def resolve_expected_block_reorder_code(payload: dict[str, Any], language_id: st
     if isinstance(by_language, dict) and language_id in by_language:
         return str(by_language[language_id])
 
+    default_language = str(payload.get("language") or "python")
+    explicit_expected = str(payload.get("expected_code") or "")
+    if default_language == language_id and explicit_expected:
+        return explicit_expected
+
     correct_order = list(payload.get("correct_order") or [])
     statements = block_reorder_statements(payload, language_id)
     if correct_order and statements:
         return assemble_block_reorder_code(statements, correct_order, language_id)
 
-    return str(payload.get("expected_code") or "")
+    return explicit_expected

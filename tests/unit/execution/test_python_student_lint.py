@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -31,7 +30,6 @@ def test_python_lint_uses_student_ruff_config() -> None:
     assert RUFF_STUDENT_CONFIG.is_file()
 
 
-@pytest.mark.skipif(shutil.which("ruff") is None, reason="ruff is not installed locally")
 def test_python_lint_ignores_trailing_newline(local_runner: LocalCodeRunner) -> None:
     code = 'print("hello")'  # двойные кавычки, без пустой строки в конце
     errors = local_runner.lint("python", code)
@@ -41,7 +39,6 @@ def test_python_lint_ignores_trailing_newline(local_runner: LocalCodeRunner) -> 
     assert "w292" not in combined
 
 
-@pytest.mark.skipif(shutil.which("ruff") is None, reason="ruff is not installed locally")
 def test_python_lint_recommends_double_quotes(local_runner: LocalCodeRunner) -> None:
     code = "print('hello')\n"
     errors = local_runner.lint("python", code)
@@ -50,7 +47,6 @@ def test_python_lint_recommends_double_quotes(local_runner: LocalCodeRunner) -> 
     assert "q000" in combined or "double quotes" in combined or "quotes" in combined
 
 
-@pytest.mark.skipif(shutil.which("ruff") is None, reason="ruff is not installed locally")
 def test_python_lint_still_reports_syntax_errors(local_runner: LocalCodeRunner) -> None:
     code = "print('hello'"
     errors = local_runner.lint("python", code)

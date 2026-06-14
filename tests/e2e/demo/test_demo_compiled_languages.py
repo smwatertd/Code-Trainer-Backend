@@ -4,24 +4,12 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.auth import auth_headers
+from tests.e2e.helpers.payloads import TASK3_SUM_PASCAL, TASK9_DIGIT_SUM_PASCAL, TASK10_MINUTES_BLOCKS
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_demo_check__cpp_compile_and_run_passes(client: AsyncClient) -> None:
-    submit = await client.post(
-        "/api/demo/check",
-        json={
-            "task_id": 9,
-            "language": "cpp",
-            "code": (
-                "#include <iostream>\n"
-                "int main() {\n"
-                "  for (int i = 0; i < 3; ++i) std::cout << i << '\\n';\n"
-                "  return 0;\n"
-                "}\n"
-            ),
-        },
-    )
+async def test_demo_check__pascal_translation_compile_and_run_passes(client: AsyncClient) -> None:
+    submit = await client.post("/api/demo/check", json=TASK9_DIGIT_SUM_PASCAL)
     assert submit.status_code == 200
     queued = submit.json()
 
@@ -34,17 +22,8 @@ async def test_demo_check__cpp_compile_and_run_passes(client: AsyncClient) -> No
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_demo_check__pascal_compile_and_run_passes(client: AsyncClient) -> None:
-    submit = await client.post(
-        "/api/demo/check",
-        json={
-            "task_id": 10,
-            "language": "pascal",
-            "code": (
-                "program T;\n" "var i: integer;\n" "begin\n" "  for i := 1 to 3 do\n" "    writeln(i);\n" "end.\n"
-            ),
-        },
-    )
+async def test_demo_check__pascal_block_compile_and_run_passes(client: AsyncClient) -> None:
+    submit = await client.post("/api/demo/check", json=TASK10_MINUTES_BLOCKS)
     queued = submit.json()
 
     result = await client.get(f"/api/demo/check/{queued['job_id']}")
@@ -56,7 +35,7 @@ async def test_demo_check__pascal_compile_and_run_passes(client: AsyncClient) ->
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_submissions__cpp_compile_and_run_passes(
+async def test_submissions__pascal_translation_compile_and_run_passes(
     auth_client: tuple[AsyncClient, object],
 ) -> None:
     client, auth_user = auth_client
@@ -65,17 +44,7 @@ async def test_submissions__cpp_compile_and_run_passes(
     submit = await client.post(
         "/api/submissions",
         headers=headers,
-        json={
-            "task_id": 9,
-            "language": "cpp",
-            "code": (
-                "#include <iostream>\n"
-                "int main() {\n"
-                "  for (int i = 0; i < 3; ++i) std::cout << i << '\\n';\n"
-                "  return 0;\n"
-                "}\n"
-            ),
-        },
+        json=TASK3_SUM_PASCAL,
     )
 
     assert submit.status_code == 200

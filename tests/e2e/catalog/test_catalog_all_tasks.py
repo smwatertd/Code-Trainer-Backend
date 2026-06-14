@@ -3,21 +3,25 @@ from __future__ import annotations
 import pytest
 from httpx import AsyncClient
 
+from migrations.seeds.task_catalog_seed import CATALOG_SIZE
+
 
 @pytest.mark.asyncio(loop_scope="session")
 @pytest.mark.parametrize(
     ("task_id", "task_type"),
     [
-        (1, "translation"),
-        (2, "task_build_from_blocks"),
-        (3, "task_flowchart_to_code"),
-        (4, "task_write_from_description"),
-        (5, "task_build_from_blocks"),
-        (6, "task_flowchart_to_code"),
-        (7, "translation"),
+        (1, "task_build_from_blocks"),
+        (2, "translation"),
+        (3, "translation"),
+        (4, "task_build_from_blocks"),
+        (5, "translation"),
+        (6, "translation"),
+        (7, "task_build_from_blocks"),
         (8, "translation"),
-        (9, "task_write_from_description"),
-        (10, "task_write_from_description"),
+        (9, "translation"),
+        (10, "task_build_from_blocks"),
+        (11, "translation"),
+        (12, "translation"),
     ],
 )
 async def test_catalog__get_each_seeded_task(
@@ -41,43 +45,46 @@ async def test_catalog__list_contains_all_seeded_ids(client: AsyncClient) -> Non
 
     assert response.status_code == 200
     ids = {item["id"] for item in response.json()}
-    assert len(ids) == 50
-    assert ids == set(range(1, 51))
+    assert len([task_id for task_id in ids if task_id <= CATALOG_SIZE]) == CATALOG_SIZE
+    assert ids >= set(range(1, CATALOG_SIZE + 1))
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_catalog__translation_task_hides_test_cases(client: AsyncClient) -> None:
-    response = await client.get("/api/catalog/tasks/4")
+async def test_catalog__block_task_exposes_student_metadata(client: AsyncClient) -> None:
+    response = await client.get("/api/catalog/tasks/1")
 
     assert response.status_code == 200
     body = response.json()
-    assert body["task_type"] == "task_write_from_description"
+    assert body["task_type"] == "task_build_from_blocks"
     payload = body["payload"]
-    assert "test_cases" not in payload
-    assert "constructions" not in payload
-    assert "source_code" not in payload
-    assert payload["target_language"] == "python"
+    assert payload["language"] == "pascal"
+    assert "test_cases" in payload
+    assert "constructions" in payload
+    assert "code_examples" in payload
+    assert "program_entry" in payload["constructions"]
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_catalog__flowchart_task_exposes_mode_and_hides_answers(client: AsyncClient) -> None:
+async def test_catalog__translation_task_exposes_reference_and_tests(client: AsyncClient) -> None:
     response = await client.get("/api/catalog/tasks/3")
 
     assert response.status_code == 200
     payload = response.json()["payload"]
-    assert payload["flowchart_mode"] == "code_to_flowchart"
-    assert "test_cases" not in payload
+    assert payload["target_language"] == "pascal"
+    assert payload["source_language"] == "python"
+    assert "test_cases" in payload
+    assert "code_examples" in payload
+    assert "kind" not in payload
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_catalog__snippet_task_hides_internal_fields(client: AsyncClient) -> None:
-    response = await client.get("/api/catalog/tasks/7")
+async def test_catalog__debug_translation_exposes_template(client: AsyncClient) -> None:
+    response = await client.get("/api/catalog/tasks/2")
 
     assert response.status_code == 200
     payload = response.json()["payload"]
-    assert "kind" not in payload
-    assert "patterns" not in payload
-    assert payload["target_language"] == "cpp"
+    assert payload["template"]
+    assert payload["target_language"] == "pascal"
 
 
 @pytest.mark.asyncio(loop_scope="session")

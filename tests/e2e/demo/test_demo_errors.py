@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.http import assert_api_error
-from tests.e2e.helpers.payloads import TASK2_BLOCK_REORDER_OK
+from tests.e2e.helpers.payloads import DEMO_CHECK_PAYLOAD
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -23,8 +23,8 @@ async def test_demo_check__unknown_task_returns_404(client: AsyncClient) -> None
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_demo_check__rate_limit_returns_429(strict_guest_client: AsyncClient) -> None:
-    first = await strict_guest_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
-    second = await strict_guest_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
+    first = await strict_guest_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
+    second = await strict_guest_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
 
     assert first.status_code == 200
     assert_api_error(second, status=429, code="RATE_LIMIT_EXCEEDED")
@@ -46,8 +46,8 @@ async def test_demo_check__guest_disabled_returns_404(guest_disabled_client: Asy
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_demo_check__duplicate_submit_returns_same_job_id(dedup_client: AsyncClient) -> None:
-    first = await dedup_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
-    second = await dedup_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
+    first = await dedup_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
+    second = await dedup_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
 
     assert first.status_code == 200
     assert second.status_code == 200

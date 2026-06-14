@@ -93,11 +93,11 @@ def test_java_compile_command__uses_detected_class_name() -> None:
 
 def test_local_compile_check__java_uses_public_class_name(local_runner: LocalCodeRunner) -> None:
     if shutil.which("javac") is None:
-        pytest.skip("javac is not installed")
+        pytest.fail("javac is not installed")
     try:
         subprocess.run(["javac", "-version"], capture_output=True, check=True, timeout=5)
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
-        pytest.skip("javac is not available")
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as exc:
+        pytest.fail(f"javac is not available: {exc}")
 
     code = (
         "public class HelloWorld {\n"
@@ -108,7 +108,7 @@ def test_local_compile_check__java_uses_public_class_name(local_runner: LocalCod
     )
     errors = local_runner.compile_check("java", code)
     if any("Java Runtime" in err or "Unable to locate" in err for err in errors):
-        pytest.skip("javac is not available")
+        pytest.fail(f"javac is not available: {errors}")
     assert errors == []
 
 

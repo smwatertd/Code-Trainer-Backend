@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.demo import run_demo_check
-from tests.e2e.helpers.payloads import TASK1_HELLO_PYTHON, TASK2_BLOCK_REORDER_OK
+from tests.e2e.helpers.payloads import TASK1_HELLO_BLOCKS, TASK2_AGE_PASCAL, TASK4_AREA_BLOCKS
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -12,8 +12,8 @@ async def test_demo__block_reorder_wrong_order_fails_before_tests(client: AsyncC
     body = await run_demo_check(
         client,
         {
-            **TASK2_BLOCK_REORDER_OK,
-            "block_order": [0, 1],
+            **TASK1_HELLO_BLOCKS,
+            "block_order": [0, 2, 1, 3],
         },
     )
 
@@ -24,20 +24,18 @@ async def test_demo__block_reorder_wrong_order_fails_before_tests(client: AsyncC
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_demo__block_reorder_correct_order_passes(client: AsyncClient) -> None:
-    body = await run_demo_check(client, TASK2_BLOCK_REORDER_OK)
+    body = await run_demo_check(client, TASK1_HELLO_BLOCKS)
 
     assert body["success"] is True
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_demo__block_reorder_task5_wrong_order_fails_structurally(client: AsyncClient) -> None:
+async def test_demo__block_task4_wrong_order_fails_structurally(client: AsyncClient) -> None:
     body = await run_demo_check(
         client,
         {
-            "task_id": 5,
-            "language": "python",
-            "code": "print(2)\nprint(1)",
-            "block_order": [1, 0],
+            **TASK4_AREA_BLOCKS,
+            "block_order": [0, 1, 2, 4, 3, 5, 6],
         },
     )
 
@@ -47,7 +45,7 @@ async def test_demo__block_reorder_task5_wrong_order_fails_structurally(client: 
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_demo__translation_task1_hello_success(client: AsyncClient) -> None:
-    body = await run_demo_check(client, TASK1_HELLO_PYTHON)
+async def test_demo__fix_task2_age_success(client: AsyncClient) -> None:
+    body = await run_demo_check(client, TASK2_AGE_PASCAL)
 
     assert body["success"] is True

@@ -12,6 +12,8 @@ class TaskSummaryResponse(BaseModel):
     difficulty: str
     task_type: str
     topics: list[str] = Field(default_factory=list)
+    languages: list[str] = Field(default_factory=list)
+    progress_status: str | None = None
 
 
 class TeacherTaskCreateRequest(BaseModel):

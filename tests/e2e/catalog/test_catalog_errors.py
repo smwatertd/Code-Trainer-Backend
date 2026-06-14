@@ -19,7 +19,7 @@ async def test_catalog__list_contains_seeded_block_reorder_task(client: AsyncCli
     assert response.status_code == 200
     tasks = response.json()
     ids = {task["id"] for task in tasks}
-    assert 2 in ids
+    assert 1 in ids
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -28,5 +28,5 @@ async def test_catalog__task_detail_has_payload(client: AsyncClient) -> None:
 
     assert response.status_code == 200
     body = response.json()
-    assert body["task_type"] == "task_build_from_blocks"
+    assert body["task_type"] == "translation"
     assert "payload" in body

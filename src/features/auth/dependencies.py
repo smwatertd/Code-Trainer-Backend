@@ -46,6 +46,19 @@ def get_authenticated_user(
     return _decode_authenticated_user(credentials, token_provider)
 
 
+@inject
+def get_optional_authenticated_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    token_provider: JwtTokenProvider = Depends(Provide[Container.auth.jwt_token_provider]),
+) -> AuthenticatedUser | None:
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        return None
+    try:
+        return _decode_authenticated_user(credentials, token_provider)
+    except ApplicationError:
+        return None
+
+
 def require_permission(permission: Permission) -> Callable[..., AuthenticatedUser]:
     @inject
     def _checker(

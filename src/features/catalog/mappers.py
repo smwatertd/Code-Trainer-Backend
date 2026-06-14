@@ -17,6 +17,54 @@ def _format_block_items(raw: list[Any]) -> list[dict[str, Any]]:
     return [{"id": index, "content": content} for index, content in enumerate(raw)]
 
 
+def _public_test_cases(payload: dict[str, Any]) -> list[dict[str, str]]:
+    raw = payload.get("test_cases")
+    if not isinstance(raw, list):
+        return []
+    cases: list[dict[str, str]] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        cases.append(
+            {
+                "inputs": str(item.get("inputs", item.get("input", ""))),
+                "output": str(item.get("output", item.get("expected_output", item.get("expected", "")))),
+            }
+        )
+    return cases
+
+
+def _public_constructions(payload: dict[str, Any]) -> list[str]:
+    raw = payload.get("constructions")
+    if not isinstance(raw, list):
+        return []
+    return [str(item) for item in raw if item]
+
+
+def _code_examples_from_blocks(blocks_by_language: dict[str, list[dict[str, Any]]]) -> dict[str, str]:
+    examples: dict[str, str] = {}
+    for language_id, blocks in blocks_by_language.items():
+        if not blocks:
+            continue
+        lines = [str(block.get("content", "")) for block in blocks if str(block.get("content", "")).strip()]
+        if lines:
+            examples[str(language_id)] = "\n".join(lines)
+    return examples
+
+
+def _attach_student_metadata(public: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any]:
+    test_cases = _public_test_cases(payload)
+    if test_cases:
+        public["test_cases"] = test_cases
+    constructions = _public_constructions(payload)
+    if constructions:
+        public["constructions"] = constructions
+    hints = payload.get("construction_hints")
+    if isinstance(hints, dict) and hints:
+        public["construction_hints"] = hints
+    return public
+
+
 def _public_block_reorder_payload(payload: dict[str, Any]) -> dict[str, Any]:
     default_language = str(payload.get("language") or "python")
     variants = payload.get("blocks_by_language")
@@ -41,12 +89,17 @@ def _public_block_reorder_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
     default_blocks = blocks_by_language.get(default_language) or default_blocks
 
-    return {
+    public = {
         "blocks": default_blocks,
         "blocks_by_language": blocks_by_language,
         "blocks_count": len(default_blocks),
         "language": default_language,
     }
+    code_examples = _code_examples_from_blocks(blocks_by_language)
+    if code_examples:
+        public["code_examples"] = code_examples
+        public["source_language"] = "python"
+    return _attach_student_metadata(public, payload)
 
 
 def _public_flowchart_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -58,6 +111,7 @@ def _public_flowchart_payload(payload: dict[str, Any]) -> dict[str, Any]:
         not in {
             "test_cases",
             "constructions",
+            "construction_hints",
             "flow_spec",
         }
     }
@@ -71,16 +125,22 @@ def _public_flowchart_payload(payload: dict[str, Any]) -> dict[str, Any]:
         elif "source_code_by_language" not in public:
             public["source_code_by_language"] = variants
         public["source_language"] = payload.get("source_language") or "python"
-    return public
+        public["source_code"] = source_code
+    return _attach_student_metadata(public, payload)
 
 
 def _public_translation_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    return {
+    public: dict[str, Any] = {
         "source_language": payload.get("source_language"),
         "target_language": payload.get("target_language"),
         "source_code": payload.get("source_code"),
         "template": payload.get("template"),
     }
+    source_code = payload.get("source_code")
+    source_language = str(payload.get("source_language") or "python")
+    if isinstance(source_code, str) and source_code.strip():
+        public["code_examples"] = {source_language: source_code}
+    return _attach_student_metadata(public, payload)
 
 
 def _public_write_from_description_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -93,7 +153,7 @@ def _public_write_from_description_payload(payload: dict[str, Any]) -> dict[str,
     problem_statement = payload.get("problem_statement")
     if isinstance(problem_statement, str) and problem_statement.strip():
         public["problem_statement"] = problem_statement
-    return public
+    return _attach_student_metadata(public, payload)
 
 
 def _public_payload(task_type: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -116,6 +176,21 @@ def _task_topics(payload: dict[str, Any]) -> tuple[str, ...]:
     return tuple(str(item) for item in raw if item)
 
 
+def _summary_languages(payload: dict[str, Any]) -> tuple[str, ...]:
+    languages: set[str] = set()
+    for key in ("source_language", "target_language", "language"):
+        raw = payload.get(key)
+        if raw:
+            languages.add(str(raw).strip().lower())
+    blocks_by_language = payload.get("blocks_by_language")
+    if isinstance(blocks_by_language, dict):
+        languages.update(str(key).strip().lower() for key in blocks_by_language if key)
+    code_examples = payload.get("code_examples")
+    if isinstance(code_examples, dict):
+        languages.update(str(key).strip().lower() for key in code_examples if key)
+    return tuple(sorted(languages))
+
+
 def to_summary(model: TaskModel) -> TaskSummaryDTO:
     payload = dict(model.payload or {})
     return TaskSummaryDTO(
@@ -125,6 +200,7 @@ def to_summary(model: TaskModel) -> TaskSummaryDTO:
         difficulty=model.difficulty,
         task_type=model.task_type,
         topics=_task_topics(payload),
+        languages=_summary_languages(payload),
     )
 
 

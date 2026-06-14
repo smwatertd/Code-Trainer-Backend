@@ -16,6 +16,7 @@ from src.shared.execution.checking.local_code_runner import (
     _case_output,
     _truncate,
     _wrap_stdin_lines,
+    prepare_student_code,
 )
 from src.shared.execution.checking.student_execution_errors import (
     COMPILATION_FAILED,
@@ -43,29 +44,32 @@ class DockerCodeRunner:
         return self._docker.is_available()
 
     def compile_check(self, language_id: str, code: str) -> list[str]:
+        prepared_code = prepare_student_code(language_id, code)
         if not self._docker.is_available():
-            return self._local_fallback.compile_check(language_id, code)
-        return self._run_mode(language_id, code, mode="compile")
+            return self._local_fallback.compile_check(language_id, prepared_code)
+        return self._run_mode(language_id, prepared_code, mode="compile")
 
     def lint(self, language_id: str, code: str) -> list[str]:
+        prepared_code = prepare_student_code(language_id, code)
         if not self._docker.is_available():
-            return self._local_fallback.lint(language_id, code)
-        return self._run_mode(language_id, code, mode="lint")
+            return self._local_fallback.lint(language_id, prepared_code)
+        return self._run_mode(language_id, prepared_code, mode="lint")
 
     def run_tests(self, language_id: str, code: str, test_cases: list[dict[str, Any]]) -> list[TestCaseResult]:
+        prepared_code = prepare_student_code(language_id, code)
         if not self._docker.is_available():
-            return self._local_fallback.run_tests(language_id, code, test_cases)
+            return self._local_fallback.run_tests(language_id, prepared_code, test_cases)
         cfg = self._registry.get_or_raise(language_id)
         if not test_cases or not cfg.supports(LanguageFeature.TEST):
             return []
         strategy = cfg.test.strategy
         if strategy == "stdin_lines":
-            return self._run_stdin_lines(cfg, code, test_cases)
+            return self._run_stdin_lines(cfg, prepared_code, test_cases)
         if strategy == "compile_and_run":
             if cfg.test.docker_one_shot and not cfg.test.compile:
-                return self._run_docker_one_shot(cfg, code, test_cases)
-            return self._run_compile_and_run(cfg, code, test_cases)
-        return self._local_fallback.run_tests(language_id, code, test_cases)
+                return self._run_docker_one_shot(cfg, prepared_code, test_cases)
+            return self._run_compile_and_run(cfg, prepared_code, test_cases)
+        return self._local_fallback.run_tests(language_id, prepared_code, test_cases)
 
     def _run_mode(self, language_id: str, code: str, *, mode: str) -> list[str]:
         cfg = self._registry.get_or_raise(language_id)

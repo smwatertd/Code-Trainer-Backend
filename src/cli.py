@@ -31,12 +31,17 @@ def run_worker() -> None:
 
 @app.command("seed-dev")
 def seed_dev() -> None:
-    """Create local dev accounts (student/teacher/admin) if missing."""
+    """Create local dev accounts and optional curriculum links if missing."""
     import asyncio
 
+    from src.dev.seed_curriculum_links import seed_dev_curriculum_links
     from src.dev.seed_users import seed_dev_users
 
-    asyncio.run(seed_dev_users())
+    async def _run() -> None:
+        await seed_dev_users()
+        await seed_dev_curriculum_links()
+
+    asyncio.run(_run())
 
 
 if __name__ == "__main__":

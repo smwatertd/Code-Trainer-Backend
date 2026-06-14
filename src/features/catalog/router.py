@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 
 from src.core.containers import Container
 from src.core.policies.permissions import Permission
-from src.features.auth.dependencies import AuthenticatedUser, require_permission
+from src.features.auth.dependencies import AuthenticatedUser, get_optional_authenticated_user, require_permission
 from src.features.catalog.commands import CreateTeacherTaskCommand, GetTaskCommand, ListTasksCommand
 from src.features.catalog.schemas import TaskDetailResponse, TaskSummaryResponse, TeacherTaskCreateRequest
 from src.features.catalog.usecases import CreateTeacherTaskUseCase, GetPublicTaskUseCase, ListPublicTasksUseCase
@@ -21,10 +21,16 @@ async def list_public_tasks(
     difficulty: str | None = Query(default=None),
     task_type: str | None = Query(default=None),
     topic: str | None = Query(default=None),
+    current_user: AuthenticatedUser | None = Depends(get_optional_authenticated_user),
     use_case: ListPublicTasksUseCase = Depends(Provide[Container.catalog.list_public_tasks_use_case]),
 ) -> list[TaskSummaryResponse]:
     result = await use_case.execute(
-        ListTasksCommand(difficulty=difficulty, task_type=task_type, topic=topic),
+        ListTasksCommand(
+            difficulty=difficulty,
+            task_type=task_type,
+            topic=topic,
+            user_id=current_user.user_id if current_user else None,
+        ),
     )
     items = unwrap_ok_or_http_exc(result)
     return [TaskSummaryResponse(**item.__dict__) for item in items]

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from migrations.seeds.task_catalog_seed import build_task_catalog
+from tests.fixtures.flowchart_sample_tasks import FLOWCHART_SAMPLE_CATALOG, flowchart_test_id
 from src.shared.execution.checking.flow_error_hints import enrich_flow_pattern_errors
 from src.shared.execution.checking.flow_source_alignment import (
     extract_text_requirements,
@@ -339,7 +339,7 @@ def test_regression__swapped_output_text_passes_if_literals_present() -> None:
     ("task_id", "nodes", "edges"),
     [
         (
-            3,
+            flowchart_test_id(3),
             [
                 _node("1", "start"),
                 _node("2", "input", "n = int(input())"),
@@ -351,12 +351,12 @@ def test_regression__swapped_output_text_passes_if_literals_present() -> None:
             [_edge("1", "2"), _edge("2", "3"), _edge("3", "4"), _edge("3", "5"), _edge("4", "6"), _edge("5", "6")],
         ),
         (
-            6,
+            flowchart_test_id(6),
             [_node("1", "start"), _node("2", "output", "print('hi')"), _node("3", "end")],
             [_edge("1", "2"), _edge("2", "3")],
         ),
         (
-            42,
+            flowchart_test_id(42),
             [
                 _node("1", "start"),
                 _node("2", "decision", "answer == 'no'"),
@@ -367,7 +367,7 @@ def test_regression__swapped_output_text_passes_if_literals_present() -> None:
             [_edge("1", "2"), _edge("2", "3"), _edge("2", "4"), _edge("3", "5"), _edge("4", "5")],
         ),
         (
-            48,
+            flowchart_test_id(48),
             [
                 _node("1", "start"),
                 _node("2", "input", "pwd = input()"),
@@ -381,8 +381,7 @@ def test_regression__swapped_output_text_passes_if_literals_present() -> None:
     ],
 )
 def test_seed_tasks__reject_wrong_block_text(task_id: int, nodes: list[dict], edges: list[dict]) -> None:
-    catalog = {item["id"]: item for item in build_task_catalog()}
-    payload = catalog[task_id]["payload"]
+    payload = FLOWCHART_SAMPLE_CATALOG[task_id]["payload"]
 
     result = _validate(
         nodes=nodes,

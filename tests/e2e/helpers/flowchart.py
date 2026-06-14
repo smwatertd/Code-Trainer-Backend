@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from tests.fixtures.flowchart_sample_tasks import flowchart_test_id
+
+FC_IF_ELSE = flowchart_test_id(3)
+FC_HELLO = flowchart_test_id(6)
+FC_FOR_LOOP = flowchart_test_id(40)
+
 
 def valid_if_flowchart() -> tuple[list[dict], list[dict]]:
     nodes = [

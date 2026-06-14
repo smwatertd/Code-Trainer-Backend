@@ -5,6 +5,7 @@ from httpx import AsyncClient
 
 from tests.e2e.conftest import E2EAuthUser
 from tests.e2e.helpers.auth import auth_headers
+from tests.e2e.helpers.payloads import TASK1_HELLO_BLOCKS, TASK2_AGE_PASCAL
 from tests.e2e.helpers.submissions import submit_and_get
 
 
@@ -20,9 +21,8 @@ async def test_submissions__abandon_twice_second_call_is_noop(
         headers=headers,
         json={
             "task_id": 2,
-            "language": "python",
-            "code": "print('pending')",
-            "block_order": [0, 1],
+            "language": "pascal",
+            "code": "var age: integer;\nbegin\n  readln(age);\n  writeln(age);\nend.",
         },
     )
     assert created.status_code == 200
@@ -50,11 +50,7 @@ async def test_submissions__abandon_terminal_submission_is_noop(
     finished = await submit_and_get(
         client,
         headers,
-        {
-            "task_id": 1,
-            "language": "python",
-            "code": "print('Hello')\n",
-        },
+        TASK1_HELLO_BLOCKS,
     )
     assert finished["status"] == "success"
 
@@ -78,11 +74,7 @@ async def test_submissions__abandon_other_users_submission_returns_403(
     created = await client.post(
         "/api/submissions",
         headers=owner_headers,
-        json={
-            "task_id": 1,
-            "language": "python",
-            "code": "print('x')",
-        },
+        json=TASK1_HELLO_BLOCKS,
     )
     assert created.status_code == 200
     submission_id = created.json()["id"]

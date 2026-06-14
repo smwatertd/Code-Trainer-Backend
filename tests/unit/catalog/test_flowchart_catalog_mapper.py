@@ -1,7 +1,7 @@
 from src.features.catalog.mappers import _public_flowchart_payload
 
 
-def test_public_flowchart_payload__hides_test_cases_and_answer_patterns() -> None:
+def test_public_flowchart_payload__exposes_student_metadata_hides_flow_spec() -> None:
     payload = _public_flowchart_payload(
         {
             "flowchart_mode": "code_to_flowchart",
@@ -15,8 +15,10 @@ def test_public_flowchart_payload__hides_test_cases_and_answer_patterns() -> Non
         }
     )
 
-    assert "test_cases" not in payload
-    assert "constructions" not in payload
+    assert "test_cases" in payload
+    assert payload["test_cases"] == [{"inputs": "", "output": "hello"}]
+    assert "constructions" in payload
+    assert payload["constructions"] == ["for_loop"]
     assert "flow_spec" not in payload
     assert payload["flowchart_mode"] == "code_to_flowchart"
     assert payload["source_code"] == "print('hello')"

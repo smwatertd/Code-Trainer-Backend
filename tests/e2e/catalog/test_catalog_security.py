@@ -3,14 +3,16 @@ from __future__ import annotations
 import pytest
 from httpx import AsyncClient
 
+from migrations.seeds.task_catalog_seed import CATALOG_SIZE
+
 
 @pytest.mark.asyncio(loop_scope="session")
 @pytest.mark.parametrize(
     ("task_id", "hidden_keys"),
     [
-        (2, {"correct_order", "expected_code", "test_cases"}),
-        (4, {"test_cases", "constructions", "patterns", "correct_order"}),
-        (7, {"test_cases", "patterns", "kind"}),
+        (1, {"correct_order", "expected_code"}),
+        (2, {"kind"}),
+        (3, {"kind"}),
     ],
 )
 async def test_catalog__public_detail_hides_grading_secrets(
@@ -32,7 +34,8 @@ async def test_catalog__anonymous_can_read_public_tasks_without_auth(client: Asy
     detail = await client.get("/api/catalog/tasks/1")
 
     assert listing.status_code == 200
-    assert len(listing.json()) == 50
+    product_tasks = [item for item in listing.json() if item["id"] <= CATALOG_SIZE]
+    assert len(product_tasks) == CATALOG_SIZE
     assert detail.status_code == 200
     assert detail.json()["id"] == 1
 

@@ -4,6 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.auth import auth_headers
+from tests.e2e.helpers.payloads import TASK1_HELLO_BLOCKS, TASK2_AGE_PASCAL
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -13,12 +14,7 @@ async def test_submissions__submit_requires_auth(
     client, _ = auth_client
     response = await client.post(
         "/api/submissions",
-        json={
-            "task_id": 2,
-            "language": "python",
-            "code": "print('b')\nprint('a')",
-            "block_order": [1, 0],
-        },
+        json=TASK2_AGE_PASCAL,
     )
 
     assert response.status_code == 401
@@ -34,12 +30,7 @@ async def test_submissions__submit_block_reorder_success(
     submit = await client.post(
         "/api/submissions",
         headers=headers,
-        json={
-            "task_id": 2,
-            "language": "python",
-            "code": "print('b')\nprint('a')",
-            "block_order": [1, 0],
-        },
+        json=TASK1_HELLO_BLOCKS,
     )
 
     assert submit.status_code == 200
@@ -66,10 +57,8 @@ async def test_submissions__submit_wrong_order_fails(
         "/api/submissions",
         headers=headers,
         json={
-            "task_id": 2,
-            "language": "python",
-            "code": "print('a')\nprint('b')",
-            "block_order": [0, 1],
+            **TASK1_HELLO_BLOCKS,
+            "block_order": [0, 2, 1, 3],
         },
     )
 

@@ -4,14 +4,14 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.http import assert_api_error
-from tests.e2e.helpers.payloads import TASK1_HELLO_PYTHON, TASK2_BLOCK_REORDER_OK
+from tests.e2e.helpers.payloads import DEMO_CHECK_PAYLOAD, TASK1_HELLO_BLOCKS
 
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_demo__poll_job_from_different_ip_returns_403(client: AsyncClient) -> None:
     submit = await client.post(
         "/api/demo/check",
-        json=TASK2_BLOCK_REORDER_OK,
+        json=DEMO_CHECK_PAYLOAD,
         headers={"X-Forwarded-For": "10.0.0.1"},
     )
     assert submit.status_code == 200
@@ -30,7 +30,7 @@ async def test_demo__poll_job_from_same_ip_succeeds(client: AsyncClient) -> None
     headers = {"X-Forwarded-For": "10.0.0.99"}
     submit = await client.post(
         "/api/demo/check",
-        json=TASK1_HELLO_PYTHON,
+        json=TASK1_HELLO_BLOCKS,
         headers=headers,
     )
     assert submit.status_code == 200
@@ -63,8 +63,8 @@ async def test_demo__empty_code_returns_422(client: AsyncClient) -> None:
 async def test_demo__concurrent_submit_while_job_running_returns_429(
     concurrent_guest_client: AsyncClient,
 ) -> None:
-    first = await concurrent_guest_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
-    second = await concurrent_guest_client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
+    first = await concurrent_guest_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
+    second = await concurrent_guest_client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
 
     assert first.status_code == 200
     body = assert_api_error(second, status=429, code="RATE_LIMIT_EXCEEDED")

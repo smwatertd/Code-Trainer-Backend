@@ -70,6 +70,20 @@ def test_resolve_expected_block_reorder_code__assembles_for_language() -> None:
     assert cpp_expected.index('cout << "b"') < cpp_expected.index('cout << "a"')
 
 
+def test_resolve_expected_block_reorder_code__uses_native_expected_for_default_language() -> None:
+    payload = {
+        "language": "pascal",
+        "blocks": ["program Main;", "begin", "writeln('Hello');", "end."],
+        "blocks_by_language": {
+            "pascal": ["program Main;", "begin", "writeln('Hello');", "end."],
+        },
+        "correct_order": [0, 1, 2, 3],
+        "expected_code": "program Main;\nbegin\n  writeln('Hello');\nend.",
+    }
+
+    assert resolve_expected_block_reorder_code(payload, "pascal") == payload["expected_code"]
+
+
 def test_assemble_block_reorder_code__wraps_cpp_program() -> None:
     code = assemble_block_reorder_code(
         ['cout << "b" << endl;', 'cout << "a" << endl;'],

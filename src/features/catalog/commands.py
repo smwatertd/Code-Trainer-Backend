@@ -8,6 +8,7 @@ class ListTasksCommand:
     difficulty: str | None = None
     task_type: str | None = None
     topic: str | None = None
+    user_id: int | None = None
 
 
 @dataclass(frozen=True)

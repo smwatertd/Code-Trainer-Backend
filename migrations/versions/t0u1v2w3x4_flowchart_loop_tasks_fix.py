@@ -25,7 +25,10 @@ def upgrade() -> None:
         if row["id"] not in {40, 44, 49}:
             continue
 
-        patch = json.dumps({"flow_spec": row["payload"]["flow_spec"]})
+        flow_spec = row["payload"].get("flow_spec")
+        if flow_spec is None:
+            continue
+        patch = json.dumps({"flow_spec": flow_spec})
         connection.execute(
             sa.text(f"""
                 UPDATE "{schema}"."tasks"

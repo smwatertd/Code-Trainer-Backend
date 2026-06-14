@@ -18,7 +18,7 @@ async def test_readiness_integration__database_is_reachable(settings: AppSetting
     result = await service.check_readiness()
 
     if result.checks["database"].status == "down":
-        pytest.skip("PostgreSQL is not available for integration test")
+        pytest.fail("PostgreSQL is not available for integration test")
 
     assert result.checks["database"].status == "up"
     assert isinstance(result.checks["database"].latency_ms, int)

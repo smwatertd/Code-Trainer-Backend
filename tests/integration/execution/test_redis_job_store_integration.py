@@ -11,7 +11,7 @@ from src.shared.execution.stores.redis_job_store import RedisJobStore
 @pytest.mark.asyncio
 async def test_redis_job_store_integration__enqueue_and_dequeue(settings: AppSettings) -> None:
     if not settings.redis.url:
-        pytest.skip("Redis URL is not configured")
+        pytest.fail("Redis URL is not configured")
 
     store = RedisJobStore(
         redis_url=settings.redis.url,
@@ -33,7 +33,7 @@ async def test_redis_job_store_integration__enqueue_and_dequeue(settings: AppSet
         dequeued = store.dequeue_blocking(timeout=1)
 
         if dequeued is None:
-            pytest.skip("Redis is not available for integration test")
+            pytest.fail("Redis is not available for integration test")
 
         assert dequeued.job_id == job.job_id
     finally:

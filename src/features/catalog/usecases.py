@@ -13,7 +13,7 @@ class ListPublicTasksUseCase:
     catalog_service: CatalogService
 
     async def execute(self, command: ListTasksCommand) -> AppResult[list[TaskSummaryDTO]]:
-        return await self.catalog_service.list_public_tasks(filters=command)
+        return await self.catalog_service.list_public_tasks(filters=command, user_id=command.user_id)
 
 
 @dataclass

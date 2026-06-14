@@ -86,6 +86,16 @@ def _diagnostics_from_process(result: subprocess.CompletedProcess[str]) -> list[
     return lines or [GENERIC_COMPILE_FAILED]
 
 
+def prepare_student_code(language_id: str, code: str) -> str:
+    if language_id != "pascal":
+        return code
+    stripped = code.lstrip()
+    if stripped.lower().startswith("program "):
+        return code
+    body = code.strip()
+    return f"program Solution;\n{body}\n"
+
+
 def _wrap_stdin_lines(code: str, stdin_data: str) -> str:
     lines = stdin_data.splitlines()
     setup = "\n".join(f"data.append({line!r})" for line in lines)
@@ -115,7 +125,7 @@ class LocalCodeRunner:
         command = cfg.local_compile.command if cfg.local_compile else None
         if not command:
             return [f"Local compile is not configured for language '{cfg.id}'"]
-        return self._run_with_temp_file(cfg, code, command)
+        return self._run_with_temp_file(cfg, prepare_student_code(language_id, code), command)
 
     def lint(self, language_id: str, code: str) -> list[str]:
         cfg = self._registry.get_or_raise(language_id)
@@ -124,10 +134,11 @@ class LocalCodeRunner:
         command = cfg.local_lint.command if cfg.local_lint else None
         if not command:
             return []
-        return self._run_with_temp_file(cfg, code, command)
+        return self._run_with_temp_file(cfg, prepare_student_code(language_id, code), command)
 
     def run_tests(self, language_id: str, code: str, test_cases: list[dict[str, Any]]) -> list[TestCaseResult]:
         cfg = self._registry.get_or_raise(language_id)
+        prepared_code = prepare_student_code(language_id, code)
         if not test_cases:
             return []
         if not cfg.supports(LanguageFeature.TEST):
@@ -135,11 +146,11 @@ class LocalCodeRunner:
 
         strategy = cfg.test.strategy
         if strategy == "stdin_lines":
-            return self._run_stdin_lines(cfg, code, test_cases)
+            return self._run_stdin_lines(cfg, prepared_code, test_cases)
         if strategy == "compile_and_run":
             if (cfg.test.local_one_shot or cfg.test.docker_one_shot) and not cfg.test.compile:
-                return self._run_local_one_shot(cfg, code, test_cases)
-            return self._run_compile_and_run(cfg, code, test_cases)
+                return self._run_local_one_shot(cfg, prepared_code, test_cases)
+            return self._run_compile_and_run(cfg, prepared_code, test_cases)
         return self._unsupported_tests(test_cases)
 
     def _unsupported_tests(self, test_cases: list[dict[str, Any]]) -> list[TestCaseResult]:

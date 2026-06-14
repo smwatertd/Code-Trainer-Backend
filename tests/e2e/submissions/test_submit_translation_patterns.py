@@ -4,10 +4,11 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.auth import auth_headers
+from tests.e2e.helpers.payloads import TASK3_SUM_PASCAL
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_submissions__translation_requires_for_loop(
+async def test_submissions__translation_wrong_formula_fails(
     auth_client: tuple[AsyncClient, object],
 ) -> None:
     client, auth_user = auth_client
@@ -17,9 +18,9 @@ async def test_submissions__translation_requires_for_loop(
         "/api/submissions",
         headers=headers,
         json={
-            "task_id": 4,
-            "language": "python",
-            "code": "print(0)\nprint(1)\nprint(2)\n",
+            "task_id": 3,
+            "language": "pascal",
+            "code": "var a,b,s: integer;\nbegin\n  readln(a,b);\n  s:=a*b;\n  writeln(s);\nend.",
         },
     )
 
@@ -32,11 +33,11 @@ async def test_submissions__translation_requires_for_loop(
     assert detail.status_code == 200
     body = detail.json()
     assert body["success"] is False
-    assert body["pattern_errors"]
+    assert body["test_results"]
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_submissions__translation_with_for_loop_passes(
+async def test_submissions__translation_with_correct_sum_passes(
     auth_client: tuple[AsyncClient, object],
 ) -> None:
     client, auth_user = auth_client
@@ -45,11 +46,7 @@ async def test_submissions__translation_with_for_loop_passes(
     submit = await client.post(
         "/api/submissions",
         headers=headers,
-        json={
-            "task_id": 4,
-            "language": "python",
-            "code": "for i in range(3):\n    print(i)\n",
-        },
+        json=TASK3_SUM_PASCAL,
     )
 
     assert submit.status_code == 200

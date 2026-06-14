@@ -8,7 +8,7 @@ from httpx import AsyncClient
 from tests.e2e.conftest import E2EAuthUser
 from tests.e2e.helpers.auth import auth_headers
 from tests.e2e.helpers.http import assert_api_error
-from tests.e2e.helpers.payloads import TASK2_BLOCK_REORDER_OK
+from tests.e2e.helpers.payloads import DEMO_CHECK_PAYLOAD
 from tests.e2e.helpers.users import register_user
 
 PROTECTED_ENDPOINTS: list[tuple[str, str, dict | None]] = [
@@ -59,7 +59,7 @@ async def test_anonymous__public_catalog_languages_and_demo_check_work(client: A
     catalog = await client.get("/api/catalog/tasks")
     task = await client.get("/api/catalog/tasks/2")
     languages = await client.get("/api/languages")
-    demo = await client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
+    demo = await client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
 
     assert catalog.status_code == 200
     assert task.status_code == 200
@@ -72,7 +72,7 @@ async def test_anonymous__public_catalog_languages_and_demo_check_work(client: A
 async def test_anonymous__demo_check_works_with_invalid_bearer_token(client: AsyncClient) -> None:
     response = await client.post(
         "/api/demo/check",
-        json=TASK2_BLOCK_REORDER_OK,
+        json=DEMO_CHECK_PAYLOAD,
         headers={"Authorization": "Bearer totally-invalid-token"},
     )
 
@@ -111,9 +111,8 @@ async def test_anonymous__submission_id_not_pollable_as_demo_job(client: AsyncCl
         headers=headers,
         json={
             "task_id": 2,
-            "language": "python",
-            "code": "print('b')\nprint('a')",
-            "block_order": [1, 0],
+            "language": "pascal",
+            "code": "var age: integer;\nbegin\n  readln(age);\n  writeln(age);\nend.",
         },
     )
     assert submit.status_code == 200
@@ -127,7 +126,7 @@ async def test_anonymous__submission_id_not_pollable_as_demo_job(client: AsyncCl
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_anonymous__demo_job_not_readable_via_submissions_api(client: AsyncClient) -> None:
-    queued = await client.post("/api/demo/check", json=TASK2_BLOCK_REORDER_OK)
+    queued = await client.post("/api/demo/check", json=DEMO_CHECK_PAYLOAD)
     assert queued.status_code == 200
     job_id = queued.json()["job_id"]
 
@@ -150,9 +149,8 @@ async def test_anonymous__cannot_read_other_users_submission_without_auth(
         headers=headers,
         json={
             "task_id": 2,
-            "language": "python",
-            "code": "print('b')\nprint('a')",
-            "block_order": [1, 0],
+            "language": "pascal",
+            "code": "var age: integer;\nbegin\n  readln(age);\n  writeln(age);\nend.",
         },
     )
     assert created.status_code == 200

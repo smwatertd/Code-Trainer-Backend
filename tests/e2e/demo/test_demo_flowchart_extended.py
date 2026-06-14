@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.demo import run_demo_check
-from tests.e2e.helpers.flowchart import hello_flowchart
+from tests.e2e.helpers.flowchart import FC_HELLO, FC_IF_ELSE, hello_flowchart
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -14,7 +14,7 @@ async def test_demo__flowchart_task6_semantic_success(client: AsyncClient) -> No
     body = await run_demo_check(
         client,
         {
-            "task_id": 6,
+            "task_id": FC_HELLO,
             "language": "python",
             "code": "print('hello')",
             "nodes": nodes,
@@ -33,7 +33,7 @@ async def test_demo__flowchart_task6_wrong_block_text_fails(client: AsyncClient)
     body = await run_demo_check(
         client,
         {
-            "task_id": 6,
+            "task_id": FC_HELLO,
             "language": "python",
             "code": "print('hello')",
             "nodes": nodes,
@@ -60,7 +60,7 @@ async def test_demo__flowchart_task3_missing_decision_branch_fails(client: Async
     body = await run_demo_check(
         client,
         {
-            "task_id": 3,
+            "task_id": FC_IF_ELSE,
             "language": "python",
             "code": "if n > 0: print('pos')\nelse: print('nonpos')",
             "nodes": nodes,

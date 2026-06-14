@@ -4,13 +4,12 @@ import pytest
 from httpx import AsyncClient
 
 from tests.e2e.helpers.auth import auth_headers
-from tests.e2e.helpers.flowchart import hello_flowchart, valid_if_flowchart
-
-FLOWCHART_TASK_IDS = [3, 6, *range(39, 51)]
+from tests.e2e.helpers.flowchart import FC_FOR_LOOP, FC_HELLO, FC_IF_ELSE, hello_flowchart, valid_if_flowchart
+from tests.fixtures.flowchart_sample_tasks import FLOWCHART_SAMPLE_IDS
 
 
 @pytest.mark.asyncio(loop_scope="session")
-@pytest.mark.parametrize("task_id", FLOWCHART_TASK_IDS)
+@pytest.mark.parametrize("task_id", FLOWCHART_SAMPLE_IDS)
 async def test_catalog__flowchart_tasks_hide_flow_spec(client: AsyncClient, task_id: int) -> None:
     response = await client.get(f"/api/catalog/tasks/{task_id}")
 
@@ -18,8 +17,7 @@ async def test_catalog__flowchart_tasks_hide_flow_spec(client: AsyncClient, task
     payload = response.json()["payload"]
     assert payload.get("flowchart_mode") == "code_to_flowchart"
     assert "flow_spec" not in payload
-    assert "test_cases" not in payload
-    assert "constructions" not in payload
+    assert "test_cases" in payload
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -35,7 +33,7 @@ async def test_submissions__flowchart_failure_has_no_flow_debug(
         "/api/submissions",
         headers=headers,
         json={
-            "task_id": 6,
+            "task_id": FC_HELLO,
             "language": "python",
             "code": "print('hello')",
             "nodes": nodes,
@@ -75,7 +73,7 @@ async def test_submissions__flowchart_wrong_for_range_fails(
         "/api/submissions",
         headers=headers,
         json={
-            "task_id": 40,
+            "task_id": FC_FOR_LOOP,
             "language": "python",
             "code": "for i in range(3):\n    print(i)",
             "nodes": nodes,
@@ -98,7 +96,7 @@ async def test_demo__flowchart_check_has_no_flow_debug(client: AsyncClient) -> N
     submit = await client.post(
         "/api/demo/check",
         json={
-            "task_id": 3,
+            "task_id": FC_IF_ELSE,
             "language": "python",
             "code": "n = int(input())\nif n > 0:\n    print('pos')\nelse:\n    print('nonpos')",
             "nodes": nodes,
