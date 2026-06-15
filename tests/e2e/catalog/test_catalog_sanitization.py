@@ -34,7 +34,7 @@ async def test_catalog__block_reorder_exposes_blocks_not_raw_strings(
 
     assert response.status_code == 200
     payload = response.json()["payload"]
-    assert payload["blocks_count"] == 4
+    assert payload["blocks_count"] == 8
     assert all("id" in block and "content" in block for block in payload["blocks"])
 
 

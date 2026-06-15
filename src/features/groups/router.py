@@ -15,6 +15,7 @@ from src.features.groups.commands import (
     ListTeacherGroupsCommand,
 )
 from src.features.groups.schemas import (
+    AssignCatalogToGroupRequest,
     CreateGroupRequest,
     GenerateInvitationRequest,
     GroupAssignmentSetSummaryResponse,
@@ -26,6 +27,8 @@ from src.features.groups.schemas import (
     JoinGroupRequest,
     StudentTaskProgressResponse,
 )
+from src.features.assignment_sets.commands import UpdateAssignmentSetCommand
+from src.features.assignment_sets.usecases import UpdateAssignmentSetUseCase
 from src.features.groups.usecases import (
     CreateGroupUseCase,
     CreateInvitationUseCase,
@@ -123,6 +126,29 @@ async def create_group_invitation(
     )
 
 
+@router.post("/{group_id}/catalogs", status_code=status.HTTP_200_OK)
+@inject
+async def assign_group_catalog(
+    group_id: int,
+    body: AssignCatalogToGroupRequest,
+    current_user: AuthenticatedUser = Depends(require_permission(Permission.MANAGE_GROUPS)),
+    use_case: UpdateAssignmentSetUseCase = Depends(
+        Provide[Container.assignment_sets.update_assignment_set_use_case],
+    ),
+) -> dict[str, int | None]:
+    dto = unwrap_ok_or_http_exc(
+        await use_case.execute(
+            UpdateAssignmentSetCommand(
+                teacher_id=current_user.user_id,
+                set_id=body.catalog_id,
+                group_id=group_id,
+                deadline_at=body.deadline_at,
+            ),
+        ),
+    )
+    return {"catalog_id": dto.id, "group_id": dto.group_id}
+
+
 @router.get("/{group_id}/dashboard", response_model=GroupDashboardResponse)
 @inject
 async def get_group_dashboard(
@@ -131,7 +157,11 @@ async def get_group_dashboard(
     use_case: GetGroupDashboardUseCase = Depends(Provide[Container.groups.get_group_dashboard_use_case]),
 ) -> GroupDashboardResponse:
     result = await use_case.execute(
-        GetGroupDashboardCommand(teacher_id=current_user.user_id, group_id=group_id),
+        GetGroupDashboardCommand(
+            teacher_id=current_user.user_id,
+            group_id=group_id,
+            viewer_role=current_user.role,
+        ),
     )
     dashboard = unwrap_ok_or_http_exc(result)
     return GroupDashboardResponse(

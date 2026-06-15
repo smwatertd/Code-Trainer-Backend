@@ -78,6 +78,7 @@ class SubmissionResultPersister:
             user_id=model.user_id,
             submission_id=submission_id,
             task_id=model.task_id,
+            language=model.language,
             passed=passed,
         )
 

@@ -31,6 +31,29 @@ def _task_payload(*, with_tests: bool = False) -> dict[str, object]:
     return payload
 
 
+def test_block_reorder_pipeline__accepts_structural_pascal_assembled_from_blocks() -> None:
+    payload = {
+        "language": "pascal",
+        "blocks": ["program Main;", "begin", "writeln('Hello');", "end."],
+        "blocks_by_language": {
+            "pascal": ["program Main;", "begin", "writeln('Hello');", "end."],
+        },
+        "correct_order": [0, 1, 2, 3],
+        "expected_code": "program Main;\nbegin\n  writeln('Hello');\nend.",
+    }
+    pipeline = BlockReorderPipeline(_FakeCodeRunner(results=[]))
+
+    result = pipeline.run(
+        language_id="pascal",
+        code="program Main;\nbegin\nwriteln('Hello');\nend.",
+        task_payload=payload,
+        block_order=[0, 1, 2, 3],
+    )
+
+    assert result["success"] is True
+    assert result["semantic_checked"] is False
+
+
 def test_block_reorder_pipeline__structural_success_without_tests() -> None:
     pipeline = BlockReorderPipeline(_FakeCodeRunner(results=[]))
 

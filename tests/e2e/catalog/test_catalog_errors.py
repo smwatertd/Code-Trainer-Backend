@@ -28,5 +28,5 @@ async def test_catalog__task_detail_has_payload(client: AsyncClient) -> None:
 
     assert response.status_code == 200
     body = response.json()
-    assert body["task_type"] == "translation"
+    assert body["task_type"] == "task_fill_placeholders"
     assert "payload" in body

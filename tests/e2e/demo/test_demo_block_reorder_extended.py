@@ -35,7 +35,7 @@ async def test_demo__block_task4_wrong_order_fails_structurally(client: AsyncCli
         client,
         {
             **TASK4_AREA_BLOCKS,
-            "block_order": [0, 1, 2, 4, 3, 5, 6],
+            "block_order": [0, 1, 3, 2, 4, 5, 6, 7],
         },
     )
 

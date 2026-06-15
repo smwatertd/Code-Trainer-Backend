@@ -1,7 +1,8 @@
-.PHONY: install install-dev lint lint-fix typecheck test test-local test-unit test-integration test-e2e test-cov dev dev-down migrate seed-dev runners runners-build runners-down prod prod-down prod-runners prod-runners-build up pre-commit hooks _cleanup-legacy-dev _cleanup-legacy-runners
+.PHONY: install install-dev lint lint-fix typecheck test test-down test-local test-unit test-integration test-e2e test-cov dev dev-down migrate seed-dev runners runners-build runners-down prod prod-down prod-runners prod-runners-build up pre-commit hooks _cleanup-legacy-dev _cleanup-legacy-runners
 
 COMPOSE_DEV = docker compose -f ./docker/docker-compose.dev.yml
 COMPOSE_PROD = docker compose -f ./docker/docker-compose.prod.yml
+COMPOSE_TEST = docker compose -f ./docker/docker-compose.test.yml
 COMPOSE_RUNNERS = docker compose -f ./docker/docker-compose.runners.yml
 COMPOSE_RUNNERS_PROD = docker compose -f ./docker/docker-compose.runners.prod.yml
 export BUILDX_NO_DEFAULT_ATTESTATIONS = 1
@@ -30,8 +31,13 @@ lint-fix:
 	ruff check --fix src tests
 
 test:
-	docker compose -f ./docker/docker-compose.test.yml up --build --abort-on-container-exit
-	docker compose -f ./docker/docker-compose.test.yml down -v --remove-orphans
+	@status=0; \
+	trap '$(COMPOSE_TEST) down -v --remove-orphans' EXIT; \
+	$(COMPOSE_TEST) up --build --abort-on-container-exit --exit-code-from api || status=$$?; \
+	exit $$status
+
+test-down:
+	$(COMPOSE_TEST) down -v --remove-orphans
 
 test-local:
 	pytest

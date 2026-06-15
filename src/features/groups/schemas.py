@@ -13,6 +13,11 @@ class GroupResponse(BaseModel):
     member_count: int = 0
 
 
+class AssignCatalogToGroupRequest(BaseModel):
+    catalog_id: int
+    deadline_at: datetime | None = None
+
+
 class CreateGroupRequest(BaseModel):
     name: str = Field(min_length=1, max_length=128)
 

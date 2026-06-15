@@ -34,10 +34,11 @@ class CurriculumProgressService:
         user_id: int,
         submission_id: int,
         task_id: int,
+        language: str,
         passed: bool,
     ) -> None:
         link_repo = TaskCurriculumLinkRepo(session)
-        primary = await link_repo.get_primary_by_task_id(task_id)
+        primary = await link_repo.get_primary_by_task_and_language(task_id, language)
         if primary is None:
             return
 

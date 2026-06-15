@@ -48,6 +48,7 @@ def translation_payload(
     if template:
         payload["template"] = template
         payload["kind"] = "debug"
+        payload["target_language"] = payload["source_language"]
     return payload
 
 

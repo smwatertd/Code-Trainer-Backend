@@ -14,7 +14,7 @@ from tests.e2e.helpers.users import register_user
 PROTECTED_ENDPOINTS: list[tuple[str, str, dict | None]] = [
     ("GET", "/api/auth/me", None),
     ("GET", "/api/progress/tasks/1", None),
-    ("GET", "/api/progress/curriculum/python/loops", None),
+    ("GET", "/api/progress/curriculum/python/chapter_1", None),
     ("POST", "/api/submissions", {"task_id": 1, "language": "python", "code": "print(1)"}),
     ("GET", "/api/submissions/1", None),
     ("POST", "/api/submissions/1/abandon", None),

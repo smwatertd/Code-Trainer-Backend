@@ -24,8 +24,8 @@ async def test_demo_check__fix_task2_correct_solution_passes(client: AsyncClient
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_demo_check__fix_task5_broken_perimeter_fails(client: AsyncClient) -> None:
-    body = await run_demo_check(client, TASK5_PERIMETER_BROKEN)
+async def test_demo_check__fix_task4_broken_count_fails(client: AsyncClient) -> None:
+    body = await run_demo_check(client, TASK2_AGE_BROKEN)
 
     assert body["success"] is False
     assert body["test_results"]

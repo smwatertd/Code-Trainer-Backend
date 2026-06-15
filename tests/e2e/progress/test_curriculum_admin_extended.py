@@ -43,7 +43,7 @@ async def test_curriculum_admin__debug_includes_python_chapters(
     assert response.status_code == 200
     body = response.json()
     chapter_ids = {item["learning_concept"]["id"] for item in body["chapters"]}
-    assert chapter_ids.issuperset({"loops", "conditions", "functions"})
+    assert chapter_ids.issuperset({"chapter_1", "chapter_2", "chapter_16"})
     assert body["validation"]["valid"] is True
 
 

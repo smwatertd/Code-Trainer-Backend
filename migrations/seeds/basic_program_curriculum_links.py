@@ -1,89 +1,17 @@
-"""Curriculum links for the 12-task basic program (ids 1–10 used in e2e)."""
+"""Backward-compatible re-exports for TC42 curriculum links."""
 
 from __future__ import annotations
 
-BASIC_PROGRAM_CURRICULUM_LINKS: list[dict] = [
-    {
-        "task_id": 1,
-        "language": "python",
-        "learning_concept_id": "loops",
-        "technical_concept_id": "for_loop",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "assemble",
-        "is_primary": True,
-    },
-    {
-        "task_id": 3,
-        "language": "python",
-        "learning_concept_id": "loops",
-        "technical_concept_id": "for_loop",
-        "exercise_pattern_id": "tr_python_snippet",
-        "action": "translate",
-        "is_primary": True,
-    },
-    {
-        "task_id": 7,
-        "language": "python",
-        "learning_concept_id": "loops",
-        "technical_concept_id": "while_loop",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "assemble",
-        "is_primary": True,
-    },
-    {
-        "task_id": 2,
-        "language": "python",
-        "learning_concept_id": "conditions",
-        "technical_concept_id": "if_else",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "debug",
-        "is_primary": True,
-    },
-    {
-        "task_id": 5,
-        "language": "python",
-        "learning_concept_id": "conditions",
-        "technical_concept_id": "if_else",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "debug",
-        "is_primary": True,
-    },
-    {
-        "task_id": 8,
-        "language": "python",
-        "learning_concept_id": "conditions",
-        "technical_concept_id": "nested_branch",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "debug",
-        "is_primary": True,
-    },
-    {
-        "task_id": 4,
-        "language": "python",
-        "learning_concept_id": "functions",
-        "technical_concept_id": "function_definition",
-        "exercise_pattern_id": "tr_pattern_translation",
-        "action": "assemble",
-        "is_primary": True,
-    },
-    {
-        "task_id": 6,
-        "language": "python",
-        "learning_concept_id": "functions",
-        "technical_concept_id": "function_call",
-        "exercise_pattern_id": "tr_python_snippet",
-        "action": "translate",
-        "is_primary": True,
-    },
-    {
-        "task_id": 9,
-        "language": "python",
-        "learning_concept_id": "functions",
-        "technical_concept_id": "return_value",
-        "exercise_pattern_id": "tr_python_snippet",
-        "action": "translate",
-        "is_primary": True,
-    },
-]
+from migrations.seeds.tc42_curriculum_links import (
+    CURRICULUM_LINKS_SEED,
+    TC42_CURRICULUM_TASK_IDS,
+    build_tc42_curriculum_links,
+)
 
-CURRICULUM_LINKS_SEED: list[dict] = list(BASIC_PROGRAM_CURRICULUM_LINKS)
+TRACK_BEGINNER_TASK_IDS = TC42_CURRICULUM_TASK_IDS
+BASIC_PROGRAM_CURRICULUM_TASK_IDS = TC42_CURRICULUM_TASK_IDS
+BASIC_PROGRAM_CURRICULUM_LINKS = CURRICULUM_LINKS_SEED
+
+
+def build_basic_program_curriculum_links() -> list[dict]:
+    return build_tc42_curriculum_links()

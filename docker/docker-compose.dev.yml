@@ -10,7 +10,7 @@ services:
       - PYTHONUNBUFFERED=1
     env_file:
       - ../.env
-    command: sh -c "alembic upgrade head && python -m src.cli api --host 0.0.0.0 --port 8000 --reload"
+    command: sh -c "alembic upgrade head && python -m src.cli seed-dev && python -m src.cli api --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
     volumes:

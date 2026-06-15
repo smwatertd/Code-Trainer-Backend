@@ -101,17 +101,9 @@ class TranslationPipeline:
             code,
             language_id,
             constructions,
-            task_payload=task_payload,
             run_pattern=run_pattern,
         )
         return compiler_errors, linter_errors, pattern_errors
-
-    @staticmethod
-    def _should_skip_construction_patterns(language_id: str, task_payload: dict[str, Any]) -> bool:
-        target_language = str(task_payload.get("target_language") or "").strip().lower()
-        if not target_language:
-            return False
-        return language_id.strip().lower() == target_language and target_language != "python"
 
     def _run_pattern(
         self,
@@ -119,10 +111,9 @@ class TranslationPipeline:
         language_id: str,
         constructions: list[Any],
         *,
-        task_payload: dict[str, Any],
         run_pattern: bool,
     ) -> list[dict[str, str]]:
-        if not run_pattern or self._should_skip_construction_patterns(language_id, task_payload):
+        if not run_pattern:
             return []
         messages = self._pattern_checker.check(code, language_id, constructions)
         return self._as_errors(messages, "CONSTRUCTION")

@@ -154,3 +154,16 @@ class SubmissionRepo:
         )
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
+
+    async def list_recent_for_user(self, *, user_id: int, limit: int = 20) -> list[SubmissionModel]:
+        stmt = (
+            select(SubmissionModel)
+            .where(
+                SubmissionModel.user_id == user_id,
+                SubmissionModel.status.in_(("success", "failed")),
+            )
+            .order_by(SubmissionModel.id.desc())
+            .limit(limit)
+        )
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())

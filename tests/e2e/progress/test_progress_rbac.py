@@ -9,7 +9,7 @@ from tests.e2e.helpers.auth import auth_headers
 
 @pytest.mark.asyncio(loop_scope="session")
 async def test_progress__curriculum_requires_auth(client: AsyncClient) -> None:
-    response = await client.get("/api/progress/curriculum/python/loops")
+    response = await client.get("/api/progress/curriculum/python/chapter_1")
 
     assert response.status_code == 401
 
@@ -21,7 +21,7 @@ async def test_progress__curriculum_guest_forbidden(
     client, auth_user = auth_guest_client
     headers = await auth_headers(client, auth_user)
 
-    response = await client.get("/api/progress/curriculum/python/loops", headers=headers)
+    response = await client.get("/api/progress/curriculum/python/chapter_1", headers=headers)
 
     assert response.status_code == 403
 
@@ -50,7 +50,7 @@ async def test_progress__curriculum_normalizes_language_case(
     client, auth_user = auth_client
     headers = await auth_headers(client, auth_user)
 
-    response = await client.get("/api/progress/curriculum/Python/loops", headers=headers)
+    response = await client.get("/api/progress/curriculum/Python/chapter_1", headers=headers)
 
     assert response.status_code == 200
     assert response.json()["language"] == "python"

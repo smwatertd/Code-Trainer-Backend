@@ -134,7 +134,7 @@ async def test_submissions__fix_task2_broken_template_fails(
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_submissions__fix_task5_broken_perimeter_fails(
+async def test_submissions__fix_task4_broken_count_fails(
     auth_client: tuple[AsyncClient, E2EAuthUser],
 ) -> None:
     client, auth_user = auth_client
@@ -143,7 +143,7 @@ async def test_submissions__fix_task5_broken_perimeter_fails(
     body = await submit_and_get(
         client,
         headers,
-        TASK5_PERIMETER_BROKEN,
+        TASK2_AGE_BROKEN,
     )
 
     assert body["success"] is False

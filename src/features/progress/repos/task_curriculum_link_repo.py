@@ -10,10 +10,28 @@ class TaskCurriculumLinkRepo:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get_primary_by_task_id(self, task_id: int) -> TaskCurriculumLinkModel | None:
+    async def get_primary_by_task_and_language(
+        self,
+        task_id: int,
+        language: str,
+    ) -> TaskCurriculumLinkModel | None:
         stmt = select(TaskCurriculumLinkModel).where(
             TaskCurriculumLinkModel.task_id == task_id,
+            TaskCurriculumLinkModel.language == language.strip().lower(),
             TaskCurriculumLinkModel.is_primary.is_(True),
+        )
+        result = await self._session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_primary_by_task_id(self, task_id: int) -> TaskCurriculumLinkModel | None:
+        stmt = (
+            select(TaskCurriculumLinkModel)
+            .where(
+                TaskCurriculumLinkModel.task_id == task_id,
+                TaskCurriculumLinkModel.is_primary.is_(True),
+            )
+            .order_by(TaskCurriculumLinkModel.id.asc())
+            .limit(1)
         )
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
@@ -52,19 +70,25 @@ class TaskCurriculumLinkRepo:
         self,
         task_id: int,
         exercise_pattern_id: str,
+        *,
+        language: str | None = None,
     ) -> TaskCurriculumLinkModel | None:
         stmt = select(TaskCurriculumLinkModel).where(
             TaskCurriculumLinkModel.task_id == task_id,
             TaskCurriculumLinkModel.exercise_pattern_id == exercise_pattern_id,
         )
+        if language is not None:
+            stmt = stmt.where(TaskCurriculumLinkModel.language == language.strip().lower())
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def clear_primary_for_task(self, task_id: int) -> None:
+    async def clear_primary_for_task(self, task_id: int, language: str | None = None) -> None:
         stmt = select(TaskCurriculumLinkModel).where(
             TaskCurriculumLinkModel.task_id == task_id,
             TaskCurriculumLinkModel.is_primary.is_(True),
         )
+        if language is not None:
+            stmt = stmt.where(TaskCurriculumLinkModel.language == language.strip().lower())
         result = await self._session.execute(stmt)
         rows = list(result.scalars().all())
         for row in rows:

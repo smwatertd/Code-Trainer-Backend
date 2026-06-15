@@ -62,6 +62,13 @@ _BASICS_CONSTRUCTIONS = [
     "stdout_write",
 ]
 
+_BASIC_IO_CONSTRUCTIONS = [
+    "program_entry",
+    "typed_declaration",
+    "stdin_read",
+    "stdout_write",
+]
+
 _PY_HELLO = "print('Hello')"
 
 _PY_AGE = "age = int(input())\nprint(age)"
@@ -265,13 +272,14 @@ def _translate_task(
     examples_key: str,
     test_cases: list[dict[str, str]],
     template: str = "",
+    constructions: list[str] | None = None,
 ) -> TaskRow:
     payload = _translation(
         topics=["basics", "program"],
         source_code=_examples(examples_key)["python"],
         target_language="pascal",
         test_cases=test_cases,
-        constructions=list(_BASICS_CONSTRUCTIONS),
+        constructions=list(constructions or _BASICS_CONSTRUCTIONS),
         template=template,
         kind="debug" if template else None,
     )
@@ -314,6 +322,7 @@ def build_basic_program_catalog() -> list[TaskRow]:
             ),
             "medium",
             examples_key="age",
+            constructions=_BASIC_IO_CONSTRUCTIONS,
             test_cases=[
                 _tc("18\n", "18"),
                 _tc("0\n", "0"),

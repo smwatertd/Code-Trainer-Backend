@@ -3,7 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from src.core.either import AppResult
-from src.features.catalog.commands import CreateTeacherTaskCommand, GetTaskCommand, ListTasksCommand
+from src.features.catalog.commands import (
+    CreateTeacherTaskCommand,
+    GetTaskCommand,
+    GetTeacherTaskCommand,
+    ListTasksCommand,
+    ListTeacherTasksCommand,
+    UpdateTeacherTaskCommand,
+)
 from src.features.catalog.domain.dto import TaskDetailDTO, TaskSummaryDTO
 from src.features.catalog.services.catalog_service import CatalogService
 
@@ -22,6 +29,30 @@ class CreateTeacherTaskUseCase:
 
     async def execute(self, command: CreateTeacherTaskCommand) -> AppResult[TaskDetailDTO]:
         return await self.catalog_service.create_teacher_task(command)
+
+
+@dataclass
+class ListTeacherTasksUseCase:
+    catalog_service: CatalogService
+
+    async def execute(self, command: ListTeacherTasksCommand) -> AppResult[list[TaskSummaryDTO]]:
+        return await self.catalog_service.list_teacher_tasks(command)
+
+
+@dataclass
+class GetTeacherTaskUseCase:
+    catalog_service: CatalogService
+
+    async def execute(self, command: GetTeacherTaskCommand) -> AppResult[TaskDetailDTO]:
+        return await self.catalog_service.get_teacher_task(command)
+
+
+@dataclass
+class UpdateTeacherTaskUseCase:
+    catalog_service: CatalogService
+
+    async def execute(self, command: UpdateTeacherTaskCommand) -> AppResult[TaskDetailDTO]:
+        return await self.catalog_service.update_teacher_task(command)
 
 
 @dataclass

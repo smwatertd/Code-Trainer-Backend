@@ -6,6 +6,7 @@ from src.features.catalog.mappers import (
     _public_block_reorder_payload,
     _public_constructions,
     _public_payload,
+    _public_placeholder_payload,
     _public_test_cases,
     _public_translation_payload,
 )
@@ -98,6 +99,28 @@ def test_public_translation_payload__exposes_student_fields_hides_secrets() -> N
     assert "expected_code" not in payload
 
 
+def test_public_translation_payload__exposes_all_code_examples_for_parallel_languages() -> None:
+    payload = _public_translation_payload(
+        {
+            "source_language": "python",
+            "target_language": "pascal",
+            "source_code": "w = int(input())\nh = int(input())\nprint(2 * (w + h))",
+            "code_examples": {
+                "python": "w = int(input())\nh = int(input())\nprint(2 * (w + h))",
+                "pascal": "var w,h,p: integer;\nbegin\n  readln(w,h);\n  p:=2*(w+h);\n  writeln(p);\nend.",
+                "cpp": "int w,h,p;\nstd::cin>>w>>h;\np=2*(w+h);\nstd::cout<<p;",
+                "csharp": "var p=Console.ReadLine().Split();\nint w=int.Parse(p[0]),h=int.Parse(p[1]);\nConsole.WriteLine(2*(w+h));",
+                "java": "Scanner sc=new Scanner(System.in);\nint w=sc.nextInt(),h=sc.nextInt();\nSystem.out.println(2*(w+h));",
+            },
+            "test_cases": [{"inputs": "4\n6\n", "output": "20"}],
+        }
+    )
+
+    assert set(payload["code_examples"]) == {"python", "pascal", "cpp", "csharp", "java"}
+    assert payload["code_examples"]["python"].startswith("w = int(input())")
+    assert "readln(w,h)" in payload["code_examples"]["pascal"]
+
+
 def test_public_block_reorder_payload__exposes_test_cases_and_code_examples() -> None:
     payload = _public_block_reorder_payload(
         {
@@ -116,6 +139,72 @@ def test_public_block_reorder_payload__exposes_test_cases_and_code_examples() ->
     assert payload["constructions"] == ["io"]
     assert payload["code_examples"]["python"] == "print('a')\nprint('b')"
     assert payload["source_language"] == "python"
+
+
+def test_public_block_reorder_payload__preserves_seed_code_examples() -> None:
+    payload = _public_block_reorder_payload(
+        {
+            "blocks": ["program Main;", "begin", "writeln('Hello');", "end."],
+            "language": "pascal",
+            "code_examples": {
+                "python": "print('Hello')",
+                "pascal": "program Main;\nbegin\n  writeln('Hello');\nend.",
+            },
+            "constructions": ["program_entry", "stdout_write"],
+        }
+    )
+
+    assert payload["code_examples"]["python"] == "print('Hello')"
+    assert payload["code_examples"]["pascal"].startswith("program Main;")
+    assert payload["constructions"] == ["program_entry", "stdout_write"]
+
+
+def test_public_block_reorder_payload__exposes_template_for_fragment_assembly() -> None:
+    payload = _public_block_reorder_payload(
+        {
+            "blocks": ["=", "print", "input"],
+            "template": "x {0} 1\ny {1} 2\n{2}(x)",
+            "correct_order": [0, 0, 1],
+            "language": "python",
+        }
+    )
+
+    assert payload["template"] == "x {0} 1\ny {1} 2\n{2}(x)"
+    assert "correct_order" not in payload
+
+
+def test_public_placeholder_payload__exposes_template_and_bank() -> None:
+    payload = _public_placeholder_payload(
+        {
+            "language": "python",
+            "target_language": "python",
+            "placeholder_template": "name = ___()\nif total ___ 0:\n    print(name, total)",
+            "placeholder_bank": ["input", "int", ">=", "print"],
+            "code_examples": {"python": "name = input()"},
+            "test_cases": [{"input": "a\n1\n1\n", "output": "a 1"}],
+            "constructions": ["stdin_read", "if_statement"],
+        }
+    )
+
+    assert payload["placeholder_template"].startswith("name = ___()")
+    assert payload["placeholder_bank"] == ["input", "int", ">=", "print"]
+    assert payload["code_examples"]["python"] == "name = input()"
+    assert payload["test_cases"] == [{"inputs": "a\n1\n1\n", "output": "a 1"}]
+    assert payload["constructions"] == ["stdin_read", "if_statement"]
+
+
+def test_public_payload__routes_placeholder_tasks() -> None:
+    payload = _public_payload(
+        "task_fill_placeholders",
+        {
+            "language": "python",
+            "placeholder_template": "print(___)",
+            "placeholder_bank": ["input"],
+        },
+    )
+
+    assert payload["placeholder_template"] == "print(___)"
+    assert payload["placeholder_bank"] == ["input"]
 
 
 def test_public_payload__translation_via_router_strips_internal_keys() -> None:

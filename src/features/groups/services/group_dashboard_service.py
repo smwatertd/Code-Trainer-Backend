@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.either import AppResult, Err, Ok
+from src.core.policies.permissions import normalize_role
 from src.core.either.failures import NotFoundFailure
 from src.core.interfaces import UnitOfWork
 from src.features.assignment_sets.models import AssignmentSetItemModel, AssignmentSetModel
@@ -116,10 +117,21 @@ class GroupDashboardRepo:
 class GroupDashboardService:
     uow: UnitOfWork
 
-    async def get_dashboard(self, *, teacher_id: int, group_id: int) -> AppResult[GroupDashboardDTO]:
+    async def get_dashboard(
+        self,
+        *,
+        teacher_id: int,
+        group_id: int,
+        viewer_role: str = "teacher",
+    ) -> AppResult[GroupDashboardDTO]:
         async with self.uow() as uow:
             group = await GroupRepo(uow.session).get_by_id(group_id)
-            if group is None or group.teacher_id != teacher_id:
+            if group is None:
+                return Err(NotFoundFailure("Group", str(group_id)))
+
+            is_owner = group.teacher_id == teacher_id
+            is_admin = normalize_role(viewer_role) == "admin"
+            if not is_owner and not is_admin:
                 return Err(NotFoundFailure("Group", str(group_id)))
 
             repo = GroupDashboardRepo(uow.session)

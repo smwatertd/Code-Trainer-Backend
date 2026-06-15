@@ -101,7 +101,11 @@ class TaskCurriculumLinkService:
                 return Err(NotFoundFailure("Task", str(task_id)))
 
             repo = TaskCurriculumLinkRepo(uow.session)
-            existing = await repo.get_by_task_and_pattern(task_id, metadata.exercise_pattern_id)
+            existing = await repo.get_by_task_and_pattern(
+                task_id,
+                metadata.exercise_pattern_id,
+                language=metadata.language,
+            )
             if existing is not None:
                 return Err(
                     ValidationFailure(
@@ -110,7 +114,7 @@ class TaskCurriculumLinkService:
                 )
 
             if is_primary:
-                await repo.clear_primary_for_task(task_id)
+                await repo.clear_primary_for_task(task_id, metadata.language)
 
             row = TaskCurriculumLinkModel(
                 task_id=task_id,
@@ -164,7 +168,11 @@ class TaskCurriculumLinkService:
                     return validation  # type: ignore[return-value]
                 metadata = validation.value
                 if exercise_pattern_id and exercise_pattern_id != existing.exercise_pattern_id:
-                    duplicate = await repo.get_by_task_and_pattern(task_id, next_pattern)
+                    duplicate = await repo.get_by_task_and_pattern(
+                        task_id,
+                        next_pattern,
+                        language=metadata.language,
+                    )
                     if duplicate is not None and duplicate.id != link_id:
                         return Err(
                             ValidationFailure(
@@ -172,7 +180,7 @@ class TaskCurriculumLinkService:
                             ),
                         )
                 if is_primary is True:
-                    await repo.clear_primary_for_task(task_id)
+                    await repo.clear_primary_for_task(task_id, metadata.language)
                 try:
                     updated = await repo.update(
                         link_id,
@@ -191,7 +199,7 @@ class TaskCurriculumLinkService:
                     )
             else:
                 if is_primary is True:
-                    await repo.clear_primary_for_task(task_id)
+                    await repo.clear_primary_for_task(task_id, next_language)
                 try:
                     updated = await repo.update(link_id, is_primary=is_primary)
                 except IntegrityError:

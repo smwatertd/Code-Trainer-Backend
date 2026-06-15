@@ -24,3 +24,26 @@ class CreateTeacherTaskCommand:
 @dataclass(frozen=True)
 class GetTaskCommand:
     task_id: int
+
+
+@dataclass(frozen=True)
+class ListTeacherTasksCommand:
+    owner_user_id: int
+
+
+@dataclass(frozen=True)
+class GetTeacherTaskCommand:
+    task_id: int
+    user_id: int
+    is_admin: bool = False
+
+
+@dataclass(frozen=True)
+class UpdateTeacherTaskCommand:
+    task_id: int
+    user_id: int
+    is_admin: bool = False
+    title: str | None = None
+    description: str | None = None
+    difficulty: str | None = None
+    payload: dict | None = None

@@ -75,4 +75,5 @@ class GetGroupDashboardUseCase:
         return await self.dashboard_service.get_dashboard(
             teacher_id=command.teacher_id,
             group_id=command.group_id,
+            viewer_role=command.viewer_role,
         )

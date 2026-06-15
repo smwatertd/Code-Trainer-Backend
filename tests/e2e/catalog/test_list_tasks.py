@@ -26,6 +26,6 @@ async def test_get_catalog_task__block_task_exposes_metadata(client: AsyncClient
     assert payload["id"] == 1
     assert "correct_order" not in payload["payload"]
     assert "expected_code" not in payload["payload"]
-    assert payload["payload"]["blocks_count"] == 4
+    assert payload["payload"]["blocks_count"] == 8
     assert "test_cases" in payload["payload"]
     assert "code_examples" in payload["payload"]

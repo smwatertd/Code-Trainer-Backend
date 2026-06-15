@@ -13,9 +13,13 @@ def get_routers() -> list[APIRouter]:
     from src.features.groups.router import router as groups_router
     from src.features.health.router import router as health_router
     from src.features.languages.router import router as languages_router
+    from src.features.profiles.router import router as profiles_router
     from src.features.progress.curriculum_link_router import router as curriculum_link_router
     from src.features.progress.router import router as progress_router
     from src.features.submissions.router import router as submissions_router
+
+    from src.features.catalogs_compat.router import router as catalogs_compat_router
+    from src.features.teacher_workspace.router import router as teacher_workspace_router
 
     return [
         health_router,
@@ -30,4 +34,7 @@ def get_routers() -> list[APIRouter]:
         curriculum_router,
         groups_router,
         assignment_sets_router,
+        catalogs_compat_router,
+        teacher_workspace_router,
+        profiles_router,
     ]

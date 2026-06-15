@@ -9,6 +9,7 @@ from src.features.tasks.services.block_reorder_validator import (
     validate_block_order_answer,
     validate_block_order_structure,
 )
+from src.shared.student_messages import ASSEMBLED_CODE_MISMATCH, BLOCKS_WRONG_ORDER
 
 
 def test_task_family_from_legacy_type__maps_block_reorder() -> None:
@@ -59,6 +60,59 @@ def test_validate_block_order_structure__requires_matching_code() -> None:
     )
 
     assert isinstance(result, Ok)
+
+
+def test_validate_block_order_structure__accepts_normalized_pascal_program() -> None:
+    program = "program Main;\nbegin\nwriteln('Hello');\nend."
+    result = validate_block_order_structure(
+        submitted_order=[0, 1, 2, 3],
+        correct_order=[0, 1, 2, 3],
+        assembled_code=f"{program}\n",
+        expected_code=program,
+    )
+
+    assert isinstance(result, Ok)
+
+
+def test_validate_block_order_structure__rejects_indented_expected_when_code_has_no_indent() -> None:
+    assembled = "program Main;\nbegin\nwriteln('Hello');\nend."
+    indented_expected = "program Main;\nbegin\n  writeln('Hello');\nend."
+
+    result = validate_block_order_structure(
+        submitted_order=[0, 1, 2, 3],
+        correct_order=[0, 1, 2, 3],
+        assembled_code=assembled,
+        expected_code=indented_expected,
+    )
+
+    assert isinstance(result, Err)
+    assert result.error.message == ASSEMBLED_CODE_MISMATCH
+
+
+def test_validate_block_order_structure__rejects_wrong_order_before_code_check() -> None:
+    result = validate_block_order_structure(
+        submitted_order=[1, 0, 2, 3],
+        correct_order=[0, 1, 2, 3],
+        assembled_code="program Main;\nbegin\nwriteln('Hello');\nend.",
+        expected_code="program Main;\nbegin\nwriteln('Hello');\nend.",
+    )
+
+    assert isinstance(result, Err)
+    assert result.error.message == BLOCKS_WRONG_ORDER
+
+
+def test_validate_block_order_structure__rejects_empty_assembled_code() -> None:
+    from src.shared.student_messages import ASSEMBLED_CODE_REQUIRED
+
+    result = validate_block_order_structure(
+        submitted_order=[0, 1, 2, 3],
+        correct_order=[0, 1, 2, 3],
+        assembled_code="   ",
+        expected_code="program Main;\nbegin\nwriteln('Hello');\nend.",
+    )
+
+    assert isinstance(result, Err)
+    assert result.error.message == ASSEMBLED_CODE_REQUIRED
 
 
 def test_matches_correct_order() -> None:

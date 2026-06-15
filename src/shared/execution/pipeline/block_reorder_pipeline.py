@@ -3,7 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from src.core.either import AppResult
-from src.features.tasks.domain.block_reorder_language import resolve_expected_block_reorder_code
+from src.features.tasks.domain.block_reorder_language import (
+    block_reorder_statements,
+    resolve_block_reorder_correct_order,
+    resolve_expected_block_reorder_code,
+)
 from src.features.tasks.services.block_reorder_validator import validate_block_order_structure
 from src.shared.execution.checking.code_runner import CodeRunner
 from src.shared.execution.checking.semantic_test_runner import build_semantic_test_result
@@ -23,8 +27,13 @@ class BlockReorderPipeline:
         task_payload: dict[str, Any],
         block_order: list[int],
     ) -> dict[str, object]:
-        correct_order = list(task_payload.get("correct_order") or [])
-        expected_code = resolve_expected_block_reorder_code(task_payload, language_id)
+        statements = block_reorder_statements(task_payload, language_id)
+        correct_order = resolve_block_reorder_correct_order(task_payload, language_id, statements)
+        expected_code = resolve_expected_block_reorder_code(
+            task_payload,
+            language_id,
+            order=block_order if statements else None,
+        )
 
         validation = validate_block_order_structure(
             submitted_order=block_order,

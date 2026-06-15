@@ -37,3 +37,4 @@ class JoinGroupCommand:
 class GetGroupDashboardCommand:
     teacher_id: int
     group_id: int
+    viewer_role: str = "teacher"

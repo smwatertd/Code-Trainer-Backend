@@ -18,4 +18,6 @@ VALID_LEGACY_ADAPTERS: frozenset[str] = frozenset(
     }
 )
 
-SUPPORTED_CURRICULUM_LANGUAGES: frozenset[str] = frozenset({"python", "pascal"})
+SUPPORTED_CURRICULUM_LANGUAGES: frozenset[str] = frozenset(
+    {"python", "pascal", "cpp", "java", "csharp"},
+)

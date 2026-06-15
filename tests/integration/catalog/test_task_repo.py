@@ -22,5 +22,5 @@ async def test_task_repo__get_public_block_reorder(session: AsyncSession) -> Non
 
     assert task is not None
     assert task.task_type == "task_build_from_blocks"
-    assert task.payload["correct_order"] == [0, 1, 2, 3]
+    assert task.payload["correct_order"] == [0, 1, 2, 3, 4, 5, 6, 7]
     assert task.payload["language"] == "pascal"

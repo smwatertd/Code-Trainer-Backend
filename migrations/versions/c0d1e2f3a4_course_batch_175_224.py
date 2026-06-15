@@ -44,7 +44,7 @@ def upgrade() -> None:
         rows.append(row)
 
     if not rows:
-        raise RuntimeError("No course batch tasks found in TASK_CATALOG_SEED")
+        return
 
     existing = connection.execute(
         sa.text(f'SELECT id FROM "{schema}"."tasks" WHERE id > :min_id LIMIT 1'),

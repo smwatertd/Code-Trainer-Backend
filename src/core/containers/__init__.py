@@ -12,6 +12,7 @@ from src.core.containers.execution import ExecutionContainer
 from src.core.containers.groups import GroupsContainer
 from src.core.containers.health import HealthContainer
 from src.core.containers.languages import LanguagesContainer
+from src.core.containers.profiles import ProfilesContainer
 from src.core.containers.progress import ProgressContainer
 from src.core.containers.submissions import SubmissionsContainer
 from src.core.logger import LoguruLogger
@@ -33,6 +34,9 @@ class Container(containers.DeclarativeContainer):
             "src.features.curriculum.router",
             "src.features.groups.router",
             "src.features.assignment_sets.router",
+            "src.features.catalogs_compat.router",
+            "src.features.teacher_workspace.router",
+            "src.features.profiles.router",
         ],
     )
 
@@ -100,6 +104,11 @@ class Container(containers.DeclarativeContainer):
         execution_service=execution.execution_service,
         progress_service=progress.progress_service,
         curriculum_progress_service=progress.curriculum_progress_service,
+    )
+
+    profiles = providers.Container(
+        ProfilesContainer,
+        uow=db.uow,
     )
 
     health = providers.Container(

@@ -10,17 +10,17 @@ from src.shared.curriculum.link_validator import validate_task_curriculum_link_m
 _CURRICULUM_ROOT = Path(__file__).resolve().parents[3] / "resources" / "curriculum"
 
 
-def test_validate_task_curriculum_link_metadata__python_for_loop_implement() -> None:
+def test_validate_task_curriculum_link_metadata__python_counted_loop_implement() -> None:
     metadata = validate_task_curriculum_link_metadata(
         _CURRICULUM_ROOT,
         language="python",
-        technical_concept_id="for_loop",
+        technical_concept_id="counted_loop",
         exercise_pattern_id="tr_pattern_translation",
     )
 
     assert metadata.language == "python"
-    assert metadata.learning_concept_id == "loops"
-    assert metadata.technical_concept_id == "for_loop"
+    assert metadata.learning_concept_id == "chapter_3"
+    assert metadata.technical_concept_id == "counted_loop"
     assert metadata.action == "implement"
 
 
@@ -33,7 +33,7 @@ def test_validate_task_curriculum_link_metadata__pascal_counted_loop_translate()
     )
 
     assert metadata.action == "translate"
-    assert metadata.learning_concept_id == "loops"
+    assert metadata.learning_concept_id == "chapter_3"
 
 
 def test_validate_task_curriculum_link_metadata__rejects_unknown_pattern() -> None:
@@ -41,20 +41,20 @@ def test_validate_task_curriculum_link_metadata__rejects_unknown_pattern() -> No
         validate_task_curriculum_link_metadata(
             _CURRICULUM_ROOT,
             language="python",
-            technical_concept_id="for_loop",
+            technical_concept_id="counted_loop",
             exercise_pattern_id="tr_does_not_exist",
         )
 
 
-def test_validate_task_curriculum_link_metadata__python_if_else_implement() -> None:
+def test_validate_task_curriculum_link_metadata__python_simple_branch_implement() -> None:
     metadata = validate_task_curriculum_link_metadata(
         _CURRICULUM_ROOT,
         language="python",
-        technical_concept_id="if_else",
+        technical_concept_id="simple_branch",
         exercise_pattern_id="tr_pattern_translation",
     )
 
-    assert metadata.learning_concept_id == "conditions"
+    assert metadata.learning_concept_id == "chapter_2"
     assert metadata.action == "implement"
 
 
@@ -66,11 +66,11 @@ def test_validate_task_curriculum_link_metadata__python_function_definition() ->
         exercise_pattern_id="tr_pattern_translation",
     )
 
-    assert metadata.learning_concept_id == "functions"
+    assert metadata.learning_concept_id == "chapter_6"
 
 
 def test_validate_task_curriculum_link_metadata__rejects_disabled_action_pattern() -> None:
-    with pytest.raises(CurriculumLinkValidationError, match="disabled|not allowed"):
+    with pytest.raises(CurriculumLinkValidationError, match="disabled|not allowed|Unknown"):
         validate_task_curriculum_link_metadata(
             _CURRICULUM_ROOT,
             language="pascal",

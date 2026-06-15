@@ -39,6 +39,30 @@ def test_public_payload__keeps_explicit_language_variants() -> None:
     assert payload["blocks_by_language"]["cpp"][0]["content"] == 'cout << "a" << endl;'
 
 
+def test_public_payload__uses_code_examples_for_python_blocks_on_pascal_seed() -> None:
+    payload = _public_payload(
+        "task_build_from_blocks",
+        {
+            "language": "pascal",
+            "blocks": ["var score: integer;", "begin", "readln(score);", "end."],
+            "blocks_by_language": {
+                "pascal": ["var score: integer;", "begin", "readln(score);", "end."],
+                "python": ["var score: integer;", "begin", "readln(score);", "end."],
+            },
+            "code_examples": {
+                "python": "score = int(input())\nif score >= 90:\n    print('excellent')",
+                "pascal": "var score: integer;\nbegin\nreadln(score);\nend.",
+            },
+        },
+    )
+
+    python_blocks = [block["content"] for block in payload["blocks_by_language"]["python"]]
+    assert python_blocks[0] == "score = int(input())"
+    assert python_blocks[1] == "if score >= 90:"
+    assert python_blocks[2] == "    print('excellent')"
+    assert payload["blocks_by_language"]["pascal"][0]["content"] == "var score: integer;"
+
+
 def test_public_payload__hides_write_from_description_answers() -> None:
     payload = _public_payload(
         "task_write_from_description",

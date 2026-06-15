@@ -38,6 +38,18 @@ class TaskRepo:
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def list_by_owner(self, owner_user_id: int) -> list[TaskModel]:
+        stmt = (
+            select(TaskModel)
+            .where(
+                TaskModel.owner_user_id == owner_user_id,
+                TaskModel.is_deleted.is_(False),
+            )
+            .order_by(TaskModel.id.desc())
+        )
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())
+
     async def create(
         self,
         *,

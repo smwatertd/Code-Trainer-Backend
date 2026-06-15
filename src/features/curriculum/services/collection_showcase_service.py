@@ -36,6 +36,7 @@ ACTION_LABELS: dict[str, str] = {
 TASK_TYPE_ACTION: dict[str, str] = {
     "translation": "translate",
     "task_build_from_blocks": "assemble",
+    "task_fill_placeholders": "assemble",
     "task_write_from_description": "implement",
     "task_flowchart_to_code": "implement",
     "algorithm": "implement",
@@ -94,6 +95,13 @@ class CollectionShowcaseService:
                 collections.append(summary)
                 aggregate_passed += summary["progress"]["passed_tasks"]
                 aggregate_total += summary["progress"]["total_tasks"]
+
+            if aggregate_total > 0:
+                collections = [
+                    item for item in collections if item["progress"]["total_tasks"] > 0
+                ]
+                aggregate_passed = sum(item["progress"]["passed_tasks"] for item in collections)
+                aggregate_total = sum(item["progress"]["total_tasks"] for item in collections)
 
             return Ok(
                 {

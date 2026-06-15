@@ -26,6 +26,7 @@ _LEGACY_TASK_TYPE_TO_FAMILY: dict[str, TaskFamily] = {
     "task_write_from_description": TaskFamily.TRANSLATION,
     "block_reorder": TaskFamily.BLOCK_REORDER,
     "task_build_from_blocks": TaskFamily.BLOCK_REORDER,
+    "task_fill_placeholders": TaskFamily.TRANSLATION,
     "diagram": TaskFamily.FLOWCHART,
     "task_flowchart_to_code": TaskFamily.FLOWCHART,
 }

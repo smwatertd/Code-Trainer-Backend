@@ -75,6 +75,62 @@ def test_translation_pipeline__pattern_check_fails_without_loop(translation_pipe
     assert result["pattern_errors"]
 
 
+def test_translation_pipeline__pascal_age_reports_missing_stdin_read(
+    translation_pipeline: TranslationPipeline,
+) -> None:
+    code = "\n".join(
+        [
+            "var age: integer;",
+            "begin",
+            "  age := 18;",
+            "  writeln(age);",
+            "end.",
+        ]
+    )
+    result = translation_pipeline.run(
+        language_id="pascal",
+        code=code,
+        task_type="translation",
+        task_payload={
+            "target_language": "pascal",
+            "constructions": ["program_entry", "typed_declaration", "stdin_read", "stdout_write"],
+            "test_cases": [{"inputs": "18\n", "output": "18"}],
+        },
+    )
+
+    assert result["success"] is False
+    assert result["pattern_errors"]
+    assert "Ввод с клавиатуры" in result["pattern_errors"][0]["text"]
+
+
+def test_translation_pipeline__pascal_age_accepts_correct_solution(
+    translation_pipeline: TranslationPipeline,
+) -> None:
+    code = "\n".join(
+        [
+            "var age: integer;",
+            "begin",
+            "  readln(age);",
+            "  writeln(age);",
+            "end.",
+        ]
+    )
+    result = translation_pipeline.run(
+        language_id="pascal",
+        code=code,
+        task_type="translation",
+        task_payload={
+            "target_language": "pascal",
+            "constructions": ["program_entry", "typed_declaration", "stdin_read", "stdout_write"],
+            "test_cases": [{"inputs": "18\n", "output": "18"}],
+        },
+    )
+
+    assert result["success"] is True
+    assert result["pattern_errors"] == []
+    assert result["test_results"][0]["status"] == "PASSED"
+
+
 def test_translation_pipeline__runs_test_cases(translation_pipeline: TranslationPipeline) -> None:
     result = translation_pipeline.run(
         language_id="python",

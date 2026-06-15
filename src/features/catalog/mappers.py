@@ -4,7 +4,11 @@ from typing import Any
 
 from src.features.catalog.domain.dto import TaskDetailDTO, TaskSummaryDTO
 from src.features.catalog.models import TaskModel
-from src.features.tasks.domain.block_reorder_language import synthesize_blocks_by_language
+from src.features.tasks.domain.block_reorder_language import (
+    BLOCK_REORDER_LANGUAGES,
+    block_reorder_statements,
+    synthesize_blocks_by_language,
+)
 from src.features.tasks.domain.enums import (
     TaskFamily,
     is_write_from_description_task,
@@ -87,6 +91,13 @@ def _public_block_reorder_payload(payload: dict[str, Any]) -> dict[str, Any]:
             if language_id not in blocks_by_language:
                 blocks_by_language[language_id] = _format_block_items(lines)
 
+    existing_examples = payload.get("code_examples")
+    if isinstance(existing_examples, dict) and existing_examples:
+        for language_id in BLOCK_REORDER_LANGUAGES:
+            statements = block_reorder_statements(payload, language_id)
+            if statements:
+                blocks_by_language[language_id] = _format_block_items(statements)
+
     default_blocks = blocks_by_language.get(default_language) or default_blocks
 
     public = {
@@ -95,9 +106,24 @@ def _public_block_reorder_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "blocks_count": len(default_blocks),
         "language": default_language,
     }
-    code_examples = _code_examples_from_blocks(blocks_by_language)
-    if code_examples:
-        public["code_examples"] = code_examples
+    template = payload.get("template")
+    if isinstance(template, str) and template.strip():
+        public["template"] = template
+    language_variants = payload.get("language_variants")
+    if isinstance(language_variants, dict) and language_variants:
+        public["language_variants"] = language_variants
+    existing_examples = payload.get("code_examples")
+    if isinstance(existing_examples, dict) and existing_examples:
+        public["code_examples"] = {
+            str(key): str(value) for key, value in existing_examples.items() if str(value).strip()
+        }
+    else:
+        code_examples = _code_examples_from_blocks(blocks_by_language)
+        if code_examples:
+            public["code_examples"] = code_examples
+    if payload.get("source_language"):
+        public["source_language"] = str(payload["source_language"])
+    elif public.get("code_examples"):
         public["source_language"] = "python"
     return _attach_student_metadata(public, payload)
 
@@ -136,10 +162,25 @@ def _public_translation_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "source_code": payload.get("source_code"),
         "template": payload.get("template"),
     }
+    kind = payload.get("kind")
+    if isinstance(kind, str) and kind.strip().lower() == "debug":
+        public["kind"] = "debug"
     source_code = payload.get("source_code")
-    source_language = str(payload.get("source_language") or "python")
+    source_language = str(payload.get("source_language") or "python").strip().lower()
+
+    code_examples: dict[str, str] = {}
+    seed_examples = payload.get("code_examples")
+    if isinstance(seed_examples, dict) and seed_examples:
+        code_examples = {
+            str(key).strip().lower(): str(value)
+            for key, value in seed_examples.items()
+            if str(value or "").strip()
+        }
     if isinstance(source_code, str) and source_code.strip():
-        public["code_examples"] = {source_language: source_code}
+        code_examples.setdefault(source_language, source_code)
+    if code_examples:
+        public["code_examples"] = code_examples
+
     return _attach_student_metadata(public, payload)
 
 
@@ -156,7 +197,23 @@ def _public_write_from_description_payload(payload: dict[str, Any]) -> dict[str,
     return _attach_student_metadata(public, payload)
 
 
+def _public_placeholder_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    public: dict[str, Any] = {
+        "language": payload.get("language") or "python",
+        "target_language": payload.get("target_language") or "python",
+        "placeholder_template": payload.get("placeholder_template"),
+        "placeholder_bank": payload.get("placeholder_bank"),
+    }
+    code_examples = payload.get("code_examples")
+    if isinstance(code_examples, dict) and code_examples:
+        public["code_examples"] = code_examples
+        public["source_language"] = payload.get("source_language") or "python"
+    return _attach_student_metadata(public, payload)
+
+
 def _public_payload(task_type: str, payload: dict[str, Any]) -> dict[str, Any]:
+    if task_type == "task_fill_placeholders":
+        return _public_placeholder_payload(payload)
     family = task_family_from_legacy_type(task_type)
     if family is TaskFamily.BLOCK_REORDER:
         return _public_block_reorder_payload(payload)

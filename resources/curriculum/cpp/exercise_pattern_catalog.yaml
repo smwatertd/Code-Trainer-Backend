@@ -1,0 +1,47 @@
+version: 1
+target_language: cpp
+
+actions:
+  - recognize
+  - assemble
+  - translate
+  - analyze
+  - debug
+  - implement
+
+patterns:
+  - id: tr_pattern_translation
+    action: implement
+    source: { kind: text }
+    target: { kind: code, language: cpp }
+    grading: tests
+    legacy_adapter: task_translate_full_program
+    description_ru: "Написать C++ по условию с проверкой конструкций."
+
+  - id: tr_cpp_snippet
+    action: translate
+    source: { kind: code, language: cpp }
+    target: { kind: code, language: cpp }
+    grading: pattern_only
+    description_ru: "Фрагмент кода с ожидаемой конструкцией."
+
+  - id: rec_cpp_snippet_to_text
+    action: recognize
+    source: { kind: code, language: cpp }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "По фрагменту C++-кода назвать конструкцию."
+
+  - id: ana_cpp_predict_output
+    action: analyze
+    source: { kind: code, language: cpp }
+    target: { kind: text }
+    grading: quiz
+    description_ru: "Предсказать вывод программы на C++."
+
+  - id: dbg_cpp_logic_fix
+    action: debug
+    source: { kind: code, language: cpp }
+    target: { kind: code, language: cpp }
+    grading: tests
+    description_ru: "Исправить логическую ошибку в C++-коде."

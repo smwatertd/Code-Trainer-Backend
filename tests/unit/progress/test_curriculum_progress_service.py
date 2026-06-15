@@ -14,7 +14,7 @@ async def test_curriculum_progress_service__skips_task_without_link() -> None:
     session = AsyncMock()
     service = CurriculumProgressService(uow=FakeUoW(session=session))
     link_repo = AsyncMock()
-    link_repo.get_primary_by_task_id = AsyncMock(return_value=None)
+    link_repo.get_primary_by_task_and_language = AsyncMock(return_value=None)
 
     with patch(
         "src.features.progress.services.curriculum_progress_service.TaskCurriculumLinkRepo",
@@ -25,10 +25,11 @@ async def test_curriculum_progress_service__skips_task_without_link() -> None:
             user_id=1,
             submission_id=10,
             task_id=99,
+            language="python",
             passed=True,
         )
 
-    link_repo.get_primary_by_task_id.assert_awaited_once_with(99)
+    link_repo.get_primary_by_task_and_language.assert_awaited_once_with(99, "python")
 
 
 @pytest.mark.asyncio
@@ -46,7 +47,7 @@ async def test_curriculum_progress_service__records_first_pass() -> None:
         is_primary=True,
     )
     link_repo = AsyncMock()
-    link_repo.get_primary_by_task_id = AsyncMock(return_value=link)
+    link_repo.get_primary_by_task_and_language = AsyncMock(return_value=link)
     progress_repo = AsyncMock()
     progress_repo.get_by_user_and_task = AsyncMock(return_value=None)
     progress_repo.add = AsyncMock(side_effect=lambda row: row)
@@ -66,6 +67,7 @@ async def test_curriculum_progress_service__records_first_pass() -> None:
             user_id=7,
             submission_id=20,
             task_id=4,
+            language="python",
             passed=True,
         )
 

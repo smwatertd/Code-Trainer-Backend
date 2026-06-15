@@ -45,11 +45,31 @@ def assemble_block_reorder_code(blocks: list[str], order: list[int], language_id
     template = _template(language_id)
     line_prefix = template.get("line_prefix", "")
     lines = [blocks[index] for index in order if 0 <= index < len(blocks)]
+    if _is_structural_program(lines):
+        return _normalize_program_code("\n".join(line.strip() for line in lines if line.strip()))
     body_lines = [
         f"{line_prefix}{line}" if line_prefix and not line.startswith(line_prefix) else line for line in lines
     ]
     body = template["joiner"].join(body_lines)
     return f'{template["header"]}{body}{template["footer"]}'
+
+
+def _normalize_program_code(text: str) -> str:
+    return "\n".join(line.rstrip() for line in text.strip().splitlines())
+
+
+def _is_structural_program(lines: list[str]) -> bool:
+    joined = " ".join(line.strip().lower() for line in lines if line.strip())
+    if (
+        "program " in joined
+        or joined.startswith("begin")
+        or "#include" in joined
+        or "public class" in joined
+        or "using system" in joined
+    ):
+        return True
+    # Pascal fragments from TC42 seeds: var ... begin ... end.
+    return "begin" in joined and ("end." in joined or "end;" in joined)
 
 
 def localize_block_statement(line: str, language_id: str) -> str:
@@ -91,6 +111,32 @@ def synthesize_blocks_by_language(statements: list[str]) -> dict[str, list[str]]
     }
 
 
+def _statements_from_example_code(code: str) -> list[str]:
+    return [
+        line.rstrip()
+        for line in code.splitlines()
+        if line.strip()
+    ]
+
+
+def _blocks_match_language_paradigm(lines: list[str], language_id: str) -> bool:
+    structural = _is_structural_program(lines)
+    joined = "\n".join(lines).lower()
+
+    if language_id == "python":
+        return not structural
+    if language_id == "pascal":
+        joined = "\n".join(lines).lower()
+        return "program " in joined or "begin" in joined or joined.lstrip().startswith("var ")
+    if language_id == "cpp":
+        return not structural or "#include" in joined
+    if language_id == "java":
+        return not structural or "public class" in joined
+    if language_id == "csharp":
+        return not structural or "using system" in joined
+    return True
+
+
 def _base_block_statements(payload: dict[str, Any]) -> list[str]:
     variants = payload.get("blocks_by_language")
     if isinstance(variants, dict):
@@ -109,25 +155,51 @@ def block_reorder_statements(payload: dict[str, Any], language_id: str) -> list[
     if isinstance(variants, dict):
         raw = variants.get(language_id)
         if isinstance(raw, list) and raw:
-            return [str(item) for item in raw]
+            localized = [localize_block_statement(str(item), language_id) for item in raw]
+            if _blocks_match_language_paradigm(localized, language_id):
+                return localized
 
     base = _base_block_statements(payload)
-    return [localize_block_statement(line, language_id) for line in base]
+    localized = [localize_block_statement(line, language_id) for line in base]
+    if _blocks_match_language_paradigm(localized, language_id):
+        return localized
+
+    examples = payload.get("code_examples")
+    if isinstance(examples, dict):
+        example = examples.get(language_id)
+        if isinstance(example, str) and example.strip():
+            return _statements_from_example_code(example)
+
+    return localized
 
 
-def resolve_expected_block_reorder_code(payload: dict[str, Any], language_id: str) -> str:
+def resolve_block_reorder_correct_order(
+    payload: dict[str, Any],
+    language_id: str,
+    statements: list[str] | None = None,
+) -> list[int]:
+    stored = list(payload.get("correct_order") or [])
+    lines = statements if statements is not None else block_reorder_statements(payload, language_id)
+    if not lines:
+        return stored
+    if len(stored) == len(lines):
+        return stored
+    return list(range(len(lines)))
+
+
+def resolve_expected_block_reorder_code(
+    payload: dict[str, Any],
+    language_id: str,
+    *,
+    order: list[int] | None = None,
+) -> str:
+    statements = block_reorder_statements(payload, language_id)
+    resolved_order = order or resolve_block_reorder_correct_order(payload, language_id, statements)
+    if resolved_order and statements:
+        return assemble_block_reorder_code(statements, resolved_order, language_id)
+
     by_language = payload.get("expected_code_by_language")
     if isinstance(by_language, dict) and language_id in by_language:
         return str(by_language[language_id])
 
-    default_language = str(payload.get("language") or "python")
-    explicit_expected = str(payload.get("expected_code") or "")
-    if default_language == language_id and explicit_expected:
-        return explicit_expected
-
-    correct_order = list(payload.get("correct_order") or [])
-    statements = block_reorder_statements(payload, language_id)
-    if correct_order and statements:
-        return assemble_block_reorder_code(statements, correct_order, language_id)
-
-    return explicit_expected
+    return str(payload.get("expected_code") or "")

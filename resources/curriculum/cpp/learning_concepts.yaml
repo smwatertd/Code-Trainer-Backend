@@ -1,0 +1,99 @@
+version: 1
+target_language: cpp
+
+concepts:
+  - id: chapter_1
+    name_ru: "Базовый синтаксис через простые алгоритмы"
+    tier: beginner
+    order: 1
+    description_ru: "Поиск max/min, линейный поиск, суммы и средние по массивам."
+
+  - id: chapter_2
+    name_ru: "Ветвления"
+    tier: beginner
+    order: 2
+    description_ru: "if/else, классификация данных и валидация условий."
+
+  - id: chapter_3
+    name_ru: "Циклы"
+    tier: beginner
+    order: 3
+    description_ru: "Циклы, накопление, фильтрация и статистика последовательностей."
+
+  - id: chapter_4
+    name_ru: "Массивы и коллекции"
+    tier: intermediate
+    order: 4
+    description_ru: "Разворот, сдвиг, вставка, объединение и анализ коллекций."
+
+  - id: chapter_5
+    name_ru: "Строки"
+    tier: intermediate
+    order: 5
+    description_ru: "Подсчёт символов, палиндромы, подстроки и RLE-сжатие."
+
+  - id: chapter_6
+    name_ru: "Функции"
+    tier: intermediate
+    order: 6
+    description_ru: "Функции для поиска, GCD, бинарного поиска и работы с массивами."
+
+  - id: chapter_7
+    name_ru: "Рекурсия"
+    tier: intermediate
+    order: 7
+    description_ru: "Факториал, Fibonacci, быстрое возведение в степень и Quicksort."
+
+  - id: chapter_8
+    name_ru: "Поиск и сортировки"
+    tier: intermediate
+    order: 8
+    description_ru: "Линейный и бинарный поиск, сортировки и таблица лидеров."
+
+  - id: chapter_9
+    name_ru: "Агрегация и фильтрация данных"
+    tier: intermediate
+    order: 9
+    description_ru: "Суммы, средние, фильтры, топ-N и группировка данных."
+
+  - id: chapter_10
+    name_ru: "Словари и key-value структуры"
+    tier: intermediate
+    order: 10
+    description_ru: "Частотные словари, телефонная книга, кэш и индексы."
+
+  - id: chapter_11
+    name_ru: "Файлы и модули"
+    tier: advanced
+    order: 11
+    description_ru: "Чтение файлов, CSV, логирование и модульная организация."
+
+  - id: chapter_12
+    name_ru: "Стек и очередь"
+    tier: advanced
+    order: 12
+    description_ru: "Стек, очередь, BFS и обработка команд."
+
+  - id: chapter_13
+    name_ru: "Связные списки"
+    tier: advanced
+    order: 13
+    description_ru: "Узлы, вставка, удаление, разворот и слияние списков."
+
+  - id: chapter_14
+    name_ru: "Деревья и графы"
+    tier: advanced
+    order: 14
+    description_ru: "DFS/BFS деревьев и графов, поиск пути на карте."
+
+  - id: chapter_15
+    name_ru: "ООП"
+    tier: advanced
+    order: 15
+    description_ru: "Классы, объекты, методы и мини-CRM на объектах."
+
+  - id: chapter_16
+    name_ru: "Наследование и итоговый проект"
+    tier: advanced
+    order: 16
+    description_ru: "Иерархии классов, полиморфизм и финальная система доставки."

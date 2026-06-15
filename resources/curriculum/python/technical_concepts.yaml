@@ -1,33 +1,171 @@
 version: 1
 
 concepts:
-  - id: for_loop
-    learning_concept_id: loops
-    name_ru: "Цикл for"
+  - id: program_entry
+    learning_concept_id: chapter_1
+    name_ru: "Точка входа программы"
     tier: beginner
-  - id: while_loop
-    learning_concept_id: loops
-    name_ru: "Цикл while"
+  - id: typed_declaration
+    learning_concept_id: chapter_1
+    name_ru: "Объявление типов"
     tier: beginner
-
-  - id: if_else
-    learning_concept_id: conditions
-    name_ru: "If / elif / else"
+  - id: assignment
+    learning_concept_id: chapter_1
+    name_ru: "Присваивание"
     tier: beginner
-  - id: nested_branch
-    learning_concept_id: conditions
-    name_ru: "Вложенные условия"
+  - id: stdin_read
+    learning_concept_id: chapter_1
+    name_ru: "Чтение stdin"
+    tier: beginner
+  - id: stdout_write
+    learning_concept_id: chapter_1
+    name_ru: "Вывод stdout"
+    tier: beginner
+  - id: arithmetic_ops
+    learning_concept_id: chapter_1
+    name_ru: "Арифметические операции"
+    tier: beginner
+  - id: indexed_sequence
+    learning_concept_id: chapter_4
+    name_ru: "Индексированная последовательность"
+    tier: beginner
+  - id: dynamic_array
+    learning_concept_id: chapter_4
+    name_ru: "Динамический массив"
+    tier: beginner
+  - id: collection_iteration
+    learning_concept_id: chapter_4
+    name_ru: "Обход коллекции"
+    tier: beginner
+  - id: search_find
+    learning_concept_id: chapter_8
+    name_ru: "Поиск элемента"
+    tier: beginner
+  - id: filter_select
+    learning_concept_id: chapter_9
+    name_ru: "Фильтрация"
     tier: intermediate
-
+  - id: fold_aggregate
+    learning_concept_id: chapter_9
+    name_ru: "Агрегация"
+    tier: intermediate
+  - id: simple_branch
+    learning_concept_id: chapter_2
+    name_ru: "Простое ветвление"
+    tier: beginner
+  - id: multi_branch
+    learning_concept_id: chapter_2
+    name_ru: "Множественное ветвление"
+    tier: beginner
+  - id: conditional_expression
+    learning_concept_id: chapter_2
+    name_ru: "Условное выражение"
+    tier: beginner
+  - id: switch_selection
+    learning_concept_id: chapter_2
+    name_ru: "Switch / case"
+    tier: beginner
+  - id: counted_loop
+    learning_concept_id: chapter_3
+    name_ru: "Счётный цикл"
+    tier: beginner
+  - id: pre_condition_loop
+    learning_concept_id: chapter_3
+    name_ru: "Цикл с предусловием"
+    tier: beginner
+  - id: post_condition_loop
+    learning_concept_id: chapter_3
+    name_ru: "Цикл с постусловием"
+    tier: beginner
+  - id: loop_control
+    learning_concept_id: chapter_3
+    name_ru: "Управление циклом"
+    tier: beginner
+  - id: nested_iteration
+    learning_concept_id: chapter_3
+    name_ru: "Вложенные циклы"
+    tier: intermediate
+  - id: string_sequence
+    learning_concept_id: chapter_5
+    name_ru: "Строки"
+    tier: intermediate
   - id: function_definition
-    learning_concept_id: functions
-    name_ru: "Определение функции def"
-    tier: beginner
-  - id: function_call
-    learning_concept_id: functions
+    learning_concept_id: chapter_6
+    name_ru: "Определение функции"
+    tier: intermediate
+  - id: function_invocation
+    learning_concept_id: chapter_6
     name_ru: "Вызов функции"
-    tier: beginner
-  - id: return_value
-    learning_concept_id: functions
-    name_ru: "Возврат значения return"
-    tier: beginner
+    tier: intermediate
+  - id: parameter_passing
+    learning_concept_id: chapter_6
+    name_ru: "Передача параметров"
+    tier: intermediate
+  - id: return_flow
+    learning_concept_id: chapter_6
+    name_ru: "Возврат значения"
+    tier: intermediate
+  - id: recursion
+    learning_concept_id: chapter_7
+    name_ru: "Рекурсия"
+    tier: intermediate
+  - id: sort_order
+    learning_concept_id: chapter_8
+    name_ru: "Сортировка"
+    tier: intermediate
+  - id: key_value_map
+    learning_concept_id: chapter_10
+    name_ru: "Словарь / map"
+    tier: intermediate
+  - id: file_read
+    learning_concept_id: chapter_11
+    name_ru: "Чтение файла"
+    tier: advanced
+  - id: file_write
+    learning_concept_id: chapter_11
+    name_ru: "Запись файла"
+    tier: advanced
+  - id: import_dependency
+    learning_concept_id: chapter_11
+    name_ru: "Импорт модулей"
+    tier: advanced
+  - id: module_namespace
+    learning_concept_id: chapter_11
+    name_ru: "Пространство имён модуля"
+    tier: advanced
+  - id: stack_queue
+    learning_concept_id: chapter_12
+    name_ru: "Стек и очередь"
+    tier: advanced
+  - id: linked_node
+    learning_concept_id: chapter_13
+    name_ru: "Связный список"
+    tier: advanced
+  - id: tree_hierarchy
+    learning_concept_id: chapter_14
+    name_ru: "Дерево"
+    tier: advanced
+  - id: graph_edges
+    learning_concept_id: chapter_14
+    name_ru: "Граф"
+    tier: advanced
+  - id: class_type
+    learning_concept_id: chapter_15
+    name_ru: "Класс"
+    tier: advanced
+  - id: object_instance
+    learning_concept_id: chapter_15
+    name_ru: "Объект"
+    tier: advanced
+  - id: method_dispatch
+    learning_concept_id: chapter_15
+    name_ru: "Вызов метода"
+    tier: advanced
+  - id: inheritance_hierarchy
+    learning_concept_id: chapter_16
+    name_ru: "Наследование"
+    tier: advanced
+  - id: symbol_visibility
+    learning_concept_id: chapter_16
+    name_ru: "Видимость символов"
+    tier: advanced

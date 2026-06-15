@@ -15,6 +15,21 @@ def matches_correct_order(submitted: list[int], correct: list[int]) -> bool:
     return list(submitted) == list(correct)
 
 
+def _normalize_program_code(text: str) -> str:
+    return "\n".join(line.rstrip() for line in text.strip().splitlines())
+
+
+def _is_structural_program(lines: list[str]) -> bool:
+    joined = " ".join(line.strip().lower() for line in lines if line.strip())
+    return (
+        "program " in joined
+        or joined.startswith("begin")
+        or "#include" in joined
+        or "public class" in joined
+        or "using system" in joined
+    )
+
+
 def validate_block_order_answer(
     *,
     submitted_order: list[int],
@@ -47,7 +62,7 @@ def validate_block_order_structure(
     if not submitted:
         return Err(ValidationFailure(ASSEMBLED_CODE_REQUIRED))
 
-    if submitted != expected_code.strip():
+    if _normalize_program_code(submitted) != _normalize_program_code(expected_code):
         return Err(ValidationFailure(ASSEMBLED_CODE_MISMATCH))
 
     return Ok(None)

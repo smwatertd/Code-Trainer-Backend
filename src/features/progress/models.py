@@ -41,12 +41,14 @@ class TaskCurriculumLinkModel(Base):
     __table_args__ = (
         sa.UniqueConstraint(
             "task_id",
+            "language",
             "exercise_pattern_id",
             name="uq_task_curriculum_link_task_pattern",
         ),
         sa.Index(
             "uq_task_curriculum_link_primary",
             "task_id",
+            "language",
             unique=True,
             postgresql_where=sa.text("is_primary = true"),
         ),

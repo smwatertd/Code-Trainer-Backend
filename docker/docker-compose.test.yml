@@ -13,6 +13,9 @@ services:
       - ../.env.test
     command: sh -c "find tests -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true; pytest tests --cov=src --cov-report=html:coverage --cov-report=xml:coverage.xml"
     volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../migrations:/app/migrations
       - ../coverage:/app/coverage
       - ../coverage.xml:/app/coverage.xml
     restart: "no"

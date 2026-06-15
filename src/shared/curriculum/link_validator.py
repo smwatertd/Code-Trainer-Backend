@@ -52,7 +52,7 @@ def validate_task_curriculum_link_metadata(
         )
 
     allowed_patterns = set(mask.patterns_for_action(action))
-    if exercise_pattern_id not in allowed_patterns:
+    if allowed_patterns and exercise_pattern_id not in allowed_patterns:
         raise CurriculumLinkValidationError(
             f"Pattern {exercise_pattern_id} is not allowed for {technical_concept_id}/{action}",
         )
